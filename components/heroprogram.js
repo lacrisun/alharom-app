@@ -1,6 +1,6 @@
 export default function HeroProg() {
     return (
-        <div className="hero min-h-min" style={{backgroundImage: 'url(/sunnymasjidilharam.png)'}}>
+        <div className="hero w-full" style={{backgroundImage: 'url(/sunnymasjidilharam.png)'}}>
             <div className="hero-overlay bg-opacity-50"></div>
                 <div className="hero-content text-center text-white">
                     <div className="max-w-md">
