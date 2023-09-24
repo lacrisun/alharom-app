@@ -26,7 +26,7 @@ export default function Navbar() {
             <div className="flex-none hidden lg:block">
                 <ul className="menu menu-horizontal menu-lg space-x-1">
                 <li><Link href="/" className="text-black hover:text-primary">Tentang Kami</Link></li>
-                <li><Link href="/" className="text-black hover:text-primary">Pendaftaran</Link></li>
+                <li><Link href="/pendaftaran" className="text-black hover:text-primary">Pendaftaran</Link></li>
                 <li><Link href="/program&paket" className="text-black hover:text-primary">Program & Paket</Link></li>
                 </ul>
             </div>
