@@ -4,7 +4,7 @@ export default function HeroDaft() {
             <div className="hero-overlay bg-opacity-50"></div>
                 <div className="text-center text-white">
                     <div className="max-w-md">
-                        <h1 className="m-5 p-16 text-4xl font-bold">Pendaftaran</h1>
+                        <h1 className="m-5 p-10 text-5xl font-bold">Pendaftaran</h1>
                     </div>
                 </div>
         </div>
