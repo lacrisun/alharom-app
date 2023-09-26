@@ -9,3 +9,31 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        Int         @id @default(autoincrement())
+  pumrah    String      @db.VarChar(42)
+  kamar     String      @db.VarChar(42)
+  nama      String      @db.VarChar(64)
+  nik       String      @db.VarChar(64)
+  tmptlahir String      @db.VarChar(255)
+  tgllahir  String      @db.VarChar(64)
+  ayahkdg   String      @db.VarChar(64)
+  numpaspor String      @db.VarChar(64)
+  pasporex  String      @db.VarChar(255)
+  pasportpt String      @db.VarChar(255)
+  pasporklu String      @db.VarChar(255)
+  jkelamin  String      @db.VarChar(42)
+  goldarah  String      @db.VarChar(4)
+  stkawin   String      @db.VarChar(42)     
+  namawaris String      @db.VarChar(64)
+  hubwaris  String      @db.VarChar(255)
+  alamat    String      @db.VarChar(255)
+  email     String      @db.VarChar(64)
+  notelpon  String      @db.VarChar(255)
+  pengumrah String      @db.VarChar(64)
+  pendidikn String      @db.VarChar(64)
+  pekerjaan String      @db.VarChar(42)
+  penyakit  String      @db.VarChar(255)
+  keldarurt String      @db.VarChar(255)
+}
