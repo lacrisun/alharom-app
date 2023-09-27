@@ -15,11 +15,11 @@ model User {
   pumrah    String      @db.VarChar(42)
   kamar     String      @db.VarChar(42)
   nama      String      @db.VarChar(64)
-  nik       String      @db.VarChar(64)
+  nik       Int
   tmptlahir String      @db.VarChar(255)
   tgllahir  String      @db.VarChar(64)
   ayahkdg   String      @db.VarChar(64)
-  numpaspor String      @db.VarChar(64)
+  numpaspor Int
   pasporex  String      @db.VarChar(255)
   pasportpt String      @db.VarChar(255)
   pasporklu String      @db.VarChar(255)
@@ -30,7 +30,7 @@ model User {
   hubwaris  String      @db.VarChar(255)
   alamat    String      @db.VarChar(255)
   email     String      @db.VarChar(64)
-  notelpon  String      @db.VarChar(255)
+  notelpon  Int
   pengumrah String      @db.VarChar(64)
   pendidikn String      @db.VarChar(64)
   pekerjaan String      @db.VarChar(42)

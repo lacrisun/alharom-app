@@ -1,3 +1,4 @@
+import Footer from "@/components/footer";
 import FooterRed from "@/components/footerred";
 import HeroProg from "@/components/heroprogram";
 import Navbar from "@/components/navbar";
@@ -10,7 +11,7 @@ export default function ProgramPaket () {
         <Navbar />
         <HeroProg />
         <Paket />
-        <FooterRed />
+        <Footer />
         </>
 
     )

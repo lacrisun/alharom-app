@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Footer from "@/components/footer";
 
 export default function Pendaftaran() {
     const router = useRouter()
@@ -40,7 +41,7 @@ export default function Pendaftaran() {
         event.preventDefault()
         
         try {
-            const body = { 
+            const userbody = { 
                 paketumrah,
                 tipekamar,
                 namalengkap,
@@ -67,12 +68,11 @@ export default function Pendaftaran() {
                 keluargadarurat 
             }
                 
-            await fetch('/api/submitData', {
+            await fetch('/api/submitdata', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
+                body: JSON.stringify(userbody)
             })
-            router.push('/')
         } catch (error) {
             console.error(error)
             }
@@ -92,6 +92,7 @@ export default function Pendaftaran() {
                                 <span className="label-text">Paket Umrah</span>
                             </label>
                             <select value={paketumrah} onChange={(e) => setPaketumrah(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
+                                <option disabled selected >Pilih Paket Umrah</option>
                                 <option>Umrah Reguler (Silver)</option>
                                 <option>Umrah Reguler (Gold)</option>
                                 <option>Umrah VIP</option>
@@ -104,6 +105,7 @@ export default function Pendaftaran() {
                                 <span className="label-text">Tipe Kamar</span>
                             </label>
                             <select value={tipekamar} onChange={(e) => setTipekamar(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
+                                <option disabled selected >Pilih Tipe Kamar</option>
                                 <option>Quad</option>
                                 <option>Triple</option>
                                 <option>Double</option>
@@ -169,6 +171,7 @@ export default function Pendaftaran() {
                                 <span className="label-text">Jenis Kelamin</span>
                             </label>
                             <select value={jeniskelamin} onChange={(e) => setJeniskelamin(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
+                                <option disabled selected >Jenis Kelamin</option>
                                 <option>Laki-laki</option>
                                 <option>Perempuan</option>
                             </select>
@@ -184,6 +187,7 @@ export default function Pendaftaran() {
                                 <span className="label-text">Status Perkawinan</span>
                             </label>
                             <select value={statuskawin} onChange={(e) => setStatuskawin(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
+                                <option disabled selected >Status Perkawinan</option>
                                 <option>Menikah</option>
                                 <option>Cerai</option>
                                 <option>Belum Menikah</option>
@@ -225,6 +229,7 @@ export default function Pendaftaran() {
                                 <span className="label-text">Pengalaman Umrah</span>
                             </label>
                             <select value={pengalaman} onChange={(e) => setPengalaman(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
+                                <option disabled selected >Sudah berapa kali Umrah?</option>
                                 <option>Ke-1</option>
                                 <option>Ke-2</option>
                                 <option>Lebih dari 2</option>
@@ -235,6 +240,7 @@ export default function Pendaftaran() {
                                 <span className="label-text">Pendidikan Terakhir</span>
                             </label>
                             <select value={pendidikanterakhir} onChange={(e) => setPendidikanterakhir(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
+                                <option disabled selected >Pilih Pendidikan Terakhir anda</option>
                                 <option>SD</option>
                                 <option>SLTP</option>
                                 <option>SLTA</option>
@@ -247,6 +253,7 @@ export default function Pendaftaran() {
                                 <span className="label-text">Pekerjaan</span>
                             </label>
                             <select value={pekerjaan} onChange={(e) => setPekerjaan(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
+                                <option disabled selected >Pilih Pekerjaan</option>
                                 <option>PNS</option>
                                 <option>TNI</option>
                                 <option>Swasta</option>
@@ -274,6 +281,7 @@ export default function Pendaftaran() {
                 </div>
             </div>
         </div>
+        <Footer />
         </>
 
     )
