@@ -5,12 +5,14 @@ import HeroDaft from "@/components/herodaftar";
 import Navbar from "@/components/navbar";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Footer from "@/components/footer";
+import { resolve } from "styled-jsx/css";
 
 export default function Pendaftaran() {
     const router = useRouter()
+
 
     const [paketumrah, setPaketumrah] = useState("Umrah Reguler (Silver)");
     const [tipekamar, setTipekamar] = useState("Quad");
@@ -85,8 +87,10 @@ export default function Pendaftaran() {
             setSubmitfail(true)
             setSubmitted(false)
             }
-
         setSubmitted(true)
+        await new Promise(resolve => 
+            setTimeout(resolve, 5000))
+            router.push('/')
     }
     return (
 
