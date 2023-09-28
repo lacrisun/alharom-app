@@ -12,8 +12,8 @@ import Footer from "@/components/footer";
 export default function Pendaftaran() {
     const router = useRouter()
 
-    const [paketumrah, setPaketumrah] = useState("");
-    const [tipekamar, setTipekamar] = useState("");
+    const [paketumrah, setPaketumrah] = useState("Umrah Reguler (Silver)");
+    const [tipekamar, setTipekamar] = useState("Quad");
     const [namalengkap, setNamalengkap] = useState("");
     const [nonik, setNonik] = useState("");
     const [tempatlahir, setTempatlahir] = useState("");
@@ -23,23 +23,27 @@ export default function Pendaftaran() {
     const [expirepaspor, setExpirepaspor] = useState("");
     const [tempatpaspor, setTempatpaspor] = useState("");
     const [pasporissued, setPasporissued] = useState("");
-    const [jeniskelamin, setJeniskelamin] = useState("");
+    const [jeniskelamin, setJeniskelamin] = useState("Laki-laki");
     const [golongandarah, setGolongandarah] = useState("");
-    const [statuskawin, setStatuskawin] = useState("");
+    const [statuskawin, setStatuskawin] = useState("Menikah");
     const [namawaris, setNamawaris] = useState("");
     const [hubunganwaris, setHubunganwaris] = useState("");
     const [alamat, setAlamat] = useState("");
     const [email, setEmail] = useState("");
     const [notelponhp, setNotelponhp] = useState("");
-    const [pengalaman, setPengalaman] = useState("");
-    const [pendidikanterakhir, setPendidikanterakhir] = useState("");
-    const [pekerjaan, setPekerjaan] = useState("");
+    const [pengalaman, setPengalaman] = useState("Ke-1");
+    const [pendidikanterakhir, setPendidikanterakhir] = useState("SD");
+    const [pekerjaan, setPekerjaan] = useState("PNS");
     const [penyakit, setPenyakit] = useState("");
     const [keluargadarurat, setKeluargadarurat] = useState("");
 
+    const [submitting, setSubmitting] = useState(false)
+    const [submitted, setSubmitted] = useState(false)
+    const [submitfail, setSubmitfail] = useState(false)
+
     const handleSubmit = async (event) => {
         event.preventDefault()
-        
+        setSubmitting(true)
         try {
             const userbody = { 
                 paketumrah,
@@ -73,9 +77,16 @@ export default function Pendaftaran() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(userbody)
             })
+
+            setSubmitting(false)
+
         } catch (error) {
             console.error(error)
+            setSubmitfail(true)
+            setSubmitted(false)
             }
+
+        setSubmitted(true)
     }
     return (
 
@@ -87,12 +98,12 @@ export default function Pendaftaran() {
                 <div className="card flex-shrink-0 w-full shadow-2xl bg-primary">
                     <form onSubmit={handleSubmit} className="card-body">
                         <h1 className="text-3xl text-bold">Pendaftaran</h1>
+                        <h1 className="text-xl text-normal">Masukkan data sesuai di KTP/Paspor anda!</h1>
                         <div className="form-control w-full max-w-xs">
                             <label className="label">
                                 <span className="label-text">Paket Umrah</span>
                             </label>
                             <select value={paketumrah} onChange={(e) => setPaketumrah(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
-                                <option disabled selected >Pilih Paket Umrah</option>
                                 <option>Umrah Reguler (Silver)</option>
                                 <option>Umrah Reguler (Gold)</option>
                                 <option>Umrah VIP</option>
@@ -105,7 +116,6 @@ export default function Pendaftaran() {
                                 <span className="label-text">Tipe Kamar</span>
                             </label>
                             <select value={tipekamar} onChange={(e) => setTipekamar(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
-                                <option disabled selected >Pilih Tipe Kamar</option>
                                 <option>Quad</option>
                                 <option>Triple</option>
                                 <option>Double</option>
@@ -171,7 +181,6 @@ export default function Pendaftaran() {
                                 <span className="label-text">Jenis Kelamin</span>
                             </label>
                             <select value={jeniskelamin} onChange={(e) => setJeniskelamin(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
-                                <option disabled selected >Jenis Kelamin</option>
                                 <option>Laki-laki</option>
                                 <option>Perempuan</option>
                             </select>
@@ -187,7 +196,6 @@ export default function Pendaftaran() {
                                 <span className="label-text">Status Perkawinan</span>
                             </label>
                             <select value={statuskawin} onChange={(e) => setStatuskawin(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
-                                <option disabled selected >Status Perkawinan</option>
                                 <option>Menikah</option>
                                 <option>Cerai</option>
                                 <option>Belum Menikah</option>
@@ -229,7 +237,6 @@ export default function Pendaftaran() {
                                 <span className="label-text">Pengalaman Umrah</span>
                             </label>
                             <select value={pengalaman} onChange={(e) => setPengalaman(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
-                                <option disabled selected >Sudah berapa kali Umrah?</option>
                                 <option>Ke-1</option>
                                 <option>Ke-2</option>
                                 <option>Lebih dari 2</option>
@@ -240,7 +247,6 @@ export default function Pendaftaran() {
                                 <span className="label-text">Pendidikan Terakhir</span>
                             </label>
                             <select value={pendidikanterakhir} onChange={(e) => setPendidikanterakhir(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
-                                <option disabled selected >Pilih Pendidikan Terakhir anda</option>
                                 <option>SD</option>
                                 <option>SLTP</option>
                                 <option>SLTA</option>
@@ -253,7 +259,6 @@ export default function Pendaftaran() {
                                 <span className="label-text">Pekerjaan</span>
                             </label>
                             <select value={pekerjaan} onChange={(e) => setPekerjaan(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
-                                <option disabled selected >Pilih Pekerjaan</option>
                                 <option>PNS</option>
                                 <option>TNI</option>
                                 <option>Swasta</option>
@@ -275,7 +280,12 @@ export default function Pendaftaran() {
                         </div>
 
                         <div className="form-control mt-6">
-                            <input type="submit" value='Kirim' className="btn btn-secondary"></input>
+                            { submitting ? ( <><input type="submit" value='Mengirim...' className="btn btn-secondary"></input></> ) : (<><input type="submit" value='Kirim' className="btn btn-secondary"></input></>) }
+                            { submitted && (<div className="alert alert-success mt-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <span>Data anda telah berhasil di kirim! Kami akan hubungi anda segera mungkin.</span></div>) }
+                            { submitfail && (<div className="alert alert-error mt-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Error! Mohon coba lagi dalam beberapa saat, atau hubungi kami.</span></div>) }
                         </div>
                     </form>
                 </div>
