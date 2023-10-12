@@ -9,10 +9,15 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Footer from "@/components/footer";
 import { resolve } from "styled-jsx/css";
+import { Invoice as InvoiceClient, Xendit } from "xendit-node";
 
 export default function Pendaftaran() {
     const router = useRouter()
-
+    const secret = process.env.XENDIT_KEY
+    const xenditClient = new Xendit({secretKey: secret})
+    const { Invoice } = xenditClient
+    
+    const xenditInvoiceClient = new InvoiceClient({secretKey: secret})
 
     const [paketumrah, setPaketumrah] = useState("Umrah Reguler (Silver)");
     const [tipekamar, setTipekamar] = useState("Quad");
@@ -42,55 +47,137 @@ export default function Pendaftaran() {
     const [submitting, setSubmitting] = useState(false)
     const [submitted, setSubmitted] = useState(false)
     const [submitfail, setSubmitfail] = useState(false)
+    const [statusbyr, setStatusbyr] = useState("BELUM_LUNAS")
+
+    let price = 0
+    if (paketumrah == 'Umrah Reguler (Silver)') {
+        price = 33500000
+    } else if (paketumrah == 'Umrah Reguler (Gold)') {
+        price = 35300000
+    } else if (paketumrah == 'Umrah VIP') {
+        price = 37550000
+    } else if (paketumrah == 'Umrah Plus Turki') {
+        price = 39197000
+    } else if (paketumrah == 'Umrah Plus Dubai') {
+        price = 35350000
+    }
+
+    const data = {
+        'externalId': '1234',
+        'amount': price,
+        'description': paketumrah,
+        'customer': {
+            'givenNames': namalengkap,
+            'email': email,
+            'mobileNumber': notelponhp,
+        }
+    }
+    
 
     const handleSubmit = async (event) => {
         event.preventDefault()
         setSubmitting(true)
-        try {
-            const userbody = { 
-                paketumrah,
-                tipekamar,
-                namalengkap,
-                nonik,
-                tempatlahir,
-                tanggallahir,
-                ayahkandung,
-                nopaspor,
-                expirepaspor,
-                tempatpaspor,
-                pasporissued,
-                jeniskelamin,
-                golongandarah,
-                statuskawin,
-                namawaris,
-                hubunganwaris,
-                alamat,
-                email,
-                notelponhp,
-                pengalaman,
-                pendidikanterakhir,
-                pekerjaan,
-                penyakit,
-                keluargadarurat 
-            }
-                
-            await fetch('/api/submitdata', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userbody)
-            })
 
-            setSubmitting(false)
+        const response = await xenditInvoiceClient.createInvoice({
+            data
+        })
+        const invoiceurl = response.invoiceUrl
+        const statusinv = response.status
 
-        } catch (error) {
-            console.error(error)
-            setSubmitfail(true)
-            setSubmitted(false)
-            }
-        setSubmitted(true)
-        await new Promise(resolve => 
-            setTimeout(resolve, 5000))
-            router.push('/')
+        router.push(invoiceurl)
+
+        if (statusinv == 'PENDING') {
+            try {
+                const userbody = { 
+                    paketumrah,
+                    tipekamar,
+                    namalengkap,
+                    nonik,
+                    tempatlahir,
+                    tanggallahir,
+                    ayahkandung,
+                    nopaspor,
+                    expirepaspor,
+                    tempatpaspor,
+                    pasporissued,
+                    jeniskelamin,
+                    golongandarah,
+                    statuskawin,
+                    namawaris,
+                    hubunganwaris,
+                    alamat,
+                    email,
+                    notelponhp,
+                    pengalaman,
+                    pendidikanterakhir,
+                    pekerjaan,
+                    penyakit,
+                    keluargadarurat,
+                    statusbyr 
+                }
+                    
+                await fetch('/api/submitdata', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userbody)
+                })
+    
+                setSubmitting(false)
+    
+            } catch (error) {
+                console.error(error)
+                setSubmitfail(true)
+                setSubmitted(false)
+                }
+            setSubmitted(true)
+
+        } else if (statusinv == 'PAID') {
+            setStatusbyr("LUNAS")
+            try {
+                const userbody = { 
+                    paketumrah,
+                    tipekamar,
+                    namalengkap,
+                    nonik,
+                    tempatlahir,
+                    tanggallahir,
+                    ayahkandung,
+                    nopaspor,
+                    expirepaspor,
+                    tempatpaspor,
+                    pasporissued,
+                    jeniskelamin,
+                    golongandarah,
+                    statuskawin,
+                    namawaris,
+                    hubunganwaris,
+                    alamat,
+                    email,
+                    notelponhp,
+                    pengalaman,
+                    pendidikanterakhir,
+                    pekerjaan,
+                    penyakit,
+                    keluargadarurat,
+                    statusbyr 
+                }
+                    
+                await fetch('/api/submitdata', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userbody)
+                })
+    
+                setSubmitting(false)
+    
+            } catch (error) {
+                console.error(error)
+                setSubmitfail(true)
+                setSubmitted(false)
+                }
+            setSubmitted(true)
+        }
+  
     }
     return (
 
@@ -287,7 +374,7 @@ export default function Pendaftaran() {
                             { submitting ? ( <><input type="submit" value='Mengirim...' className="btn btn-secondary"></input></> ) : (<><input type="submit" value='Kirim' className="btn btn-secondary"></input></>) }
                             { submitted && (<div className="alert alert-success mt-2">
                             <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            <span>Data anda telah berhasil di kirim! Kami akan hubungi anda segera mungkin.</span></div>) }
+                            <span>Data anda telah berhasil di kirim! Anda akan masuk halaman pembayaran sebentar lagi.</span></div>) }
                             { submitfail && (<div className="alert alert-error mt-2">
                             <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Error! Mohon coba lagi dalam beberapa saat, atau hubungi kami.</span></div>) }
                         </div>
