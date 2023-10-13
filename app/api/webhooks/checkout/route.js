@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 
 export async function POST(req) {
     const url = 'https://api.xendit.co/callback_urls/:invoice';
