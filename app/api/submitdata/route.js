@@ -4,15 +4,10 @@ import { NextResponse } from "next/server";
 export async function POST(req) {
     const userData = await req.json()
 
-    const random = Math.floor(Math.random() * 100000)
-    const randomStr = random.toString()
-
-    const randomID = "ALHRM-" + randomStr
-
     try {
         const result = await prisma.user.create({
             data: {
-                id: randomID,
+                id: userData.randomID,
                 paket_umrah: userData.paketumrah,
                 tipe_kamar: userData.tipekamar,
                 nama_lengkap: userData.namalengkap,

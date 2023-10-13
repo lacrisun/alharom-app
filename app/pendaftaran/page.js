@@ -19,6 +19,7 @@ export default function Pendaftaran() {
     
     const xenditInvoiceClient = new InvoiceClient({secretKey: secret})
 
+
     const [paketumrah, setPaketumrah] = useState("Umrah Reguler (Silver)");
     const [tipekamar, setTipekamar] = useState("Quad");
     const [namalengkap, setNamalengkap] = useState("");
@@ -62,33 +63,56 @@ export default function Pendaftaran() {
         price = 35350000
     }
 
-    const data = {
-        'externalId': '1234',
-        'amount': price,
-        'description': paketumrah,
-        'customer': {
-            'givenNames': namalengkap,
-            'email': email,
-            'mobileNumber': notelponhp,
-        }
-    }
+    const random = Math.floor(Math.random() * 100000)
+    const randomStr = random.toString()
+
+    const randomID = "ALHRM-" + randomStr
     
 
     const handleSubmit = async (event) => {
         event.preventDefault()
         setSubmitting(true)
 
-        const response = await xenditInvoiceClient.createInvoice({
-            data
-        })
-        const invoiceurl = response.invoiceUrl
-        const statusinv = response.status
+        let statusinv
+        let linkinvoice
 
-        router.push(invoiceurl)
+        try {
+            const data = {
+                'externalId': randomID,
+                'amount': price,
+                'description': paketumrah,
+                'customer': {
+                    'givenNames': namalengkap,
+                    'email': email,
+                    'mobileNumber': notelponhp,
+                }
+            }
+            await fetch('/api/invoicemaker', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data),
+            }) .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok')
+                }
+                return response.json()
+            }) .then((data) => {
+                console.log(data)
+                statusinv = data.response.status
+                linkinvoice = data.response.invoiceUrl
+            })
+        } catch (error) {
+            console.log(error)
+        }
+
+        router.push(linkinvoice)
 
         if (statusinv == 'PENDING') {
             try {
                 const userbody = { 
+                    randomID,
                     paketumrah,
                     tipekamar,
                     namalengkap,
@@ -135,6 +159,7 @@ export default function Pendaftaran() {
             setStatusbyr("LUNAS")
             try {
                 const userbody = { 
+                    randomID,
                     paketumrah,
                     tipekamar,
                     namalengkap,
