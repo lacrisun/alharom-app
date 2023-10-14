@@ -109,99 +109,61 @@ export default function Pendaftaran() {
 
         router.push(linkinvoice)
 
-        if (statusinv == 'PENDING') {
-            try {
-                const userbody = { 
-                    randomID,
-                    paketumrah,
-                    tipekamar,
-                    namalengkap,
-                    nonik,
-                    tempatlahir,
-                    tanggallahir,
-                    ayahkandung,
-                    nopaspor,
-                    expirepaspor,
-                    tempatpaspor,
-                    pasporissued,
-                    jeniskelamin,
-                    golongandarah,
-                    statuskawin,
-                    namawaris,
-                    hubunganwaris,
-                    alamat,
-                    email,
-                    notelponhp,
-                    pengalaman,
-                    pendidikanterakhir,
-                    pekerjaan,
-                    penyakit,
-                    keluargadarurat,
-                    statusbyr 
-                }
-                    
-                await fetch('/api/submitdata', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(userbody)
-                })
-    
-                setSubmitting(false)
-    
-            } catch (error) {
-                console.error(error)
-                setSubmitfail(true)
-                setSubmitted(false)
-                }
-            setSubmitted(true)
+        try {
+          const userbody = {
+            randomID,
+            paketumrah,
+            tipekamar,
+            namalengkap,
+            nonik,
+            tempatlahir,
+            tanggallahir,
+            ayahkandung,
+            nopaspor,
+            expirepaspor,
+            tempatpaspor,
+            pasporissued,
+            jeniskelamin,
+            golongandarah,
+            statuskawin,
+            namawaris,
+            hubunganwaris,
+            alamat,
+            email,
+            notelponhp,
+            pengalaman,
+            pendidikanterakhir,
+            pekerjaan,
+            penyakit,
+            keluargadarurat,
+            statusbyr,
+          };
 
-        } else if (statusinv == 'PAID') {
-            setStatusbyr("LUNAS")
-            try {
-                const userbody = { 
-                    randomID,
-                    paketumrah,
-                    tipekamar,
-                    namalengkap,
-                    nonik,
-                    tempatlahir,
-                    tanggallahir,
-                    ayahkandung,
-                    nopaspor,
-                    expirepaspor,
-                    tempatpaspor,
-                    pasporissued,
-                    jeniskelamin,
-                    golongandarah,
-                    statuskawin,
-                    namawaris,
-                    hubunganwaris,
-                    alamat,
-                    email,
-                    notelponhp,
-                    pengalaman,
-                    pendidikanterakhir,
-                    pekerjaan,
-                    penyakit,
-                    keluargadarurat,
-                    statusbyr 
-                }
-                    
-                await fetch('/api/submitdata', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(userbody)
-                })
-    
-                setSubmitting(false)
-    
-            } catch (error) {
-                console.error(error)
-                setSubmitfail(true)
-                setSubmitted(false)
-                }
-            setSubmitted(true)
+          await fetch(
+            "/api/submitdata",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+              body: JSON.stringify(
+                userbody
+              ),
+            }
+          );
+
+          setSubmitting(
+            false
+          );
+        } catch (error) {
+          console.error(
+            error
+          );
+          setSubmitfail(true);
+          setSubmitted(false);
         }
+        setSubmitted(true);
   
     }
     return (

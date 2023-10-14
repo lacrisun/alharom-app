@@ -20,7 +20,21 @@ export async function POST(request) {
       payment_destination: _paymentDestination
     } = arrRequestInput;
 
-    // Do something with the data here
+    try {
+        const updatedBody = {
+            _externalId,
+            _status
+        }
+        await fetch('/api/updatepaystatus', {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedBody)
+        })
+    } catch (error) {
+        console.log(error)
+    }
 
     return NextResponse.json({ message: 'Webhook processed successfully' });
   } else {
