@@ -1,50 +1,40 @@
-import { IncomingMessage, ServerResponse } from 'http';
-import { NextResponse } from 'next/server';
+import { buffer } from 'micro';
+// Initialize necessary variables
+const xenditWebhookSecret = process.env.XENDIT_WEBHOOK_SECRET; // Your Xendit webhook secret
 
-export async function POST(req) {
-  const secret = process.env.XENDIT_WEBHOOK_SECRET
-  const xenditCallbackToken = secret
+export const config = { api: { bodyParser: false } };
 
-  const reqHeaders = req.headers;
-  const xIncomingCallbackTokenHeader = reqHeaders['x-callback-token'] || '';
+const webhookHandler = async (req, res) => {
+  if (req.method === 'POST') {
+    const xSignature = req.headers['x-callback-signature'];
 
-  // Verify if the request is from Xendit
-  if (xIncomingCallbackTokenHeader === xenditCallbackToken) {
-    // Request is verified to be from Xendit
+    try {
+      // Verify the Xendit webhook signature
 
-    // Read the raw request input as JSON
-    const rawRequestInput = await new Promise((resolve, reject) => {
-      let body = '';
-      req.on('data', (chunk) => {
-        body += chunk;
-      });
-      req.on('end', () => {
-        resolve(body);
-      });
-    });
+      if (xSignature !== xenditWebhookSecret) {
+        // Invalid signature
+        res.status(403).send('Forbidden');
+        return;
+      }
 
-    // Parse the raw input into an associative array
-    const arrRequestInput = JSON.parse(rawRequestInput);
-    
-    console.log(arrRequestInput);
+      // Successfully verified signature
+      console.log('✅ Xendit Webhook Signature Verified');
 
-    const {
-      id,
-      external_id,
-      user_id,
-      status,
-      paid_amount,
-      paid_at,
-      payment_channel,
-      payment_destination,
-    } = arrRequestInput;
+      // Parse the request data (assuming it's in JSON format)
+      const requestData = JSON.parse(buf.toString());
 
-    // You can now use the above object properties for further processing in your application.
+      // Handle the Xendit webhook event
+      // ...
 
-    // Send a response (modify this as needed)
-    return NextResponse.json({arrRequestInput}, {status: 200})
-  } else {
-    // Request is not from Xendit, reject with HTTP status 403
-    return NextResponse.json({arrRequestInput}, {status: 403})
+      // Respond with a success status
+      res.status(200).send('Webhook Received and Processed');
+    } catch (err) {
+      // On error, log and return the error message
+      console.log(`❌ Error message: ${err.message}`);
+      res.status(400).send(`Webhook Error: ${err.message}`);
+      return;
+    }
   }
-}
+};
+
+export default webhookHandler;
