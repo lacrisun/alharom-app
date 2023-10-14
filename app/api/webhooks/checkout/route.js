@@ -42,6 +42,7 @@ export default async function callbackHandler(req, res) {
 
     // Send a response (modify this as needed)
     res.statusCode = 200;
+    console.log(arrRequestInput)
     res.end('Callback received and processed successfully.');
   } else {
     // Request is not from Xendit, reject with HTTP status 403
