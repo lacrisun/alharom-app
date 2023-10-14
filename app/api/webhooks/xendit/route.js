@@ -38,7 +38,7 @@ export async function POST(request) {
         console.log(error)
     }
 
-    return NextResponse.json({ message: 'Webhook processed successfully' });
+    return NextResponse.json({updatedBody});
   } else {
     return NextResponse.json({ message: 'Invalid token' }, { status: 403 });
   }
