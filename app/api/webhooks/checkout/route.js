@@ -1,32 +1,51 @@
+import { IncomingMessage, ServerResponse } from 'http';
 
-export async function POST(req) {
-    const url = 'https://api.xendit.co/callback_urls/:invoice';
-    const secret = process.env.XENDIT_KEY
-    const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': `Basic ${Buffer.from(secret).toString('base64')}`,
-    };
+export default async function callbackHandler(req, res) {
+  const secret = process.env.XENDIT_WEBHOOK_SECRET
+  const xenditCallbackToken = secret
 
-    const data = {
-      url: 'https://www.xendit.co/callback_catcher',
-    };
+  const reqHeaders = req.headers;
+  const xIncomingCallbackTokenHeader = reqHeaders['x-callback-token'] || '';
 
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(data),
+  // Verify if the request is from Xendit
+  if (xIncomingCallbackTokenHeader === xenditCallbackToken) {
+    // Request is verified to be from Xendit
+
+    // Read the raw request input as JSON
+    const rawRequestInput = await new Promise((resolve, reject) => {
+      let body = '';
+      req.on('data', (chunk) => {
+        body += chunk;
       });
+      req.on('end', () => {
+        resolve(body);
+      });
+    });
 
-      if (response.ok) {
-        const result = await response.json();
-        res.status(200).json(result);
-      } else {
-        const errorText = await response.text();
-        res.status(response.status).json({ error: errorText });
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
+    // Parse the raw input into an associative array
+    const arrRequestInput = JSON.parse(rawRequestInput);
+    
+    console.log(arrRequestInput);
+
+    const {
+      id,
+      external_id,
+      user_id,
+      status,
+      paid_amount,
+      paid_at,
+      payment_channel,
+      payment_destination,
+    } = arrRequestInput;
+
+    // You can now use the above object properties for further processing in your application.
+
+    // Send a response (modify this as needed)
+    res.statusCode = 200;
+    res.end('Callback received and processed successfully.');
+  } else {
+    // Request is not from Xendit, reject with HTTP status 403
+    res.statusCode = 403;
+    res.end('Forbidden');
+  }
 }
