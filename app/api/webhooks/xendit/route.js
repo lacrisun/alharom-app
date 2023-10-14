@@ -38,7 +38,7 @@ export async function POST(request) {
         console.log(error)
     }
 
-    return NextResponse.json({updatedBody});
+    return NextResponse.json({arrRequestInput});
   } else {
     return NextResponse.json({ message: 'Invalid token' }, { status: 403 });
   }
