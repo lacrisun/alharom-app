@@ -20,7 +20,7 @@ export async function POST(request) {
       payment_destination: _paymentDestination
     } = arrRequestInput;
 
-    const lunas = "LUNAS"
+    const lunas = _externalId
 
     try {
         const updatedBody = {
@@ -38,7 +38,7 @@ export async function POST(request) {
         console.log(error)
     }
 
-    return NextResponse.json({arrRequestInput});
+    return NextResponse.json({lunas});
   } else {
     return NextResponse.json({ message: 'Invalid token' }, { status: 403 });
   }
