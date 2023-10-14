@@ -7,7 +7,7 @@ export async function PUT(req) {
     try {
         const result = await prisma.user.update({
             where: { id: updateData._externalId },
-            data: {paystatus: updateData._status},
+            data: {paystatus: updateData.lunas},
         })
         return NextResponse.json({result}, {status: 200})
     } catch (error) {

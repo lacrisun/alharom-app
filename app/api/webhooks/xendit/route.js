@@ -20,10 +20,12 @@ export async function POST(request) {
       payment_destination: _paymentDestination
     } = arrRequestInput;
 
+    const lunas = "LUNAS"
+
     try {
         const updatedBody = {
             _externalId,
-            _status
+            lunas,
         }
         await fetch('/api/updatepaystatus', {
             method: 'PUT',
