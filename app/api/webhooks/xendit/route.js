@@ -1,5 +1,5 @@
-
 import { NextRequest, NextResponse } from 'next/server'
+import prisma from '@/lib/prisma';
 
 export async function POST(request) {
   const xenditXCallbackToken = 'Z9A3UpJEokuMaDXTBxF2CCv8oJcXmfN2pxVmhaQRuQqCvg9t';
@@ -20,25 +20,18 @@ export async function POST(request) {
       payment_destination: _paymentDestination
     } = arrRequestInput;
 
-    const lunas = _externalId
+    const lunas = "LUNAS"
 
     try {
-        const updatedBody = {
-            _externalId,
-            lunas,
-        }
-        await fetch('/api/updatepaystatus', {
-            method: 'PUT',
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(updatedBody)
+        const result = await prisma.user.update({
+            where: { id: _externalId },
+            data: {paystatus: lunas},
         })
+        return NextResponse.json({result}, {status: 200})
     } catch (error) {
         console.log(error)
+        return NextResponse.json({error}, {status: 500})
     }
-
-    return NextResponse.json({lunas});
   } else {
     return NextResponse.json({ message: 'Invalid token' }, { status: 403 });
   }
