@@ -2,7 +2,7 @@
 export async function POST(req) {
     const secret = process.env.XENDIT_WEBHOOK_SECRET
 
-    const xenditCallbackToken = secret
+    const xenditCallbackToken = 'Z9A3UpJEokuMaDXTBxF2CCv8oJcXmfN2pxVmhaQRuQqCvg9t'
   
     // Get the request headers
     const reqHeaders = req.headers;
