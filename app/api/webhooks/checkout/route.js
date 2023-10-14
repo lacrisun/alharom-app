@@ -1,6 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
+import { NextResponse } from 'next/server';
 
-export default async function callbackHandler(req, res) {
+export async function POST(req) {
   const secret = process.env.XENDIT_WEBHOOK_SECRET
   const xenditCallbackToken = secret
 
@@ -41,12 +42,9 @@ export default async function callbackHandler(req, res) {
     // You can now use the above object properties for further processing in your application.
 
     // Send a response (modify this as needed)
-    res.statusCode = 200;
-    console.log(arrRequestInput)
-    res.end('Callback received and processed successfully.');
+    return NextResponse.json({arrRequestInput}, {status: 200})
   } else {
     // Request is not from Xendit, reject with HTTP status 403
-    res.statusCode = 403;
-    res.end('Forbidden');
+    return NextResponse.json({arrRequestInput}, {status: 403})
   }
 }
