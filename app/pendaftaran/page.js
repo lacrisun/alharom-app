@@ -49,6 +49,8 @@ export default function Pendaftaran() {
     const [submitted, setSubmitted] = useState(false)
     const [submitfail, setSubmitfail] = useState(false)
     const [statusbyr, setStatusbyr] = useState("BELUM_LUNAS")
+    const [didaftarkans, setDidaftarkans] = useState("User/Sendiri")
+
 
     let price = 0
     if (paketumrah == 'Umrah Reguler (Silver)') {
@@ -137,6 +139,7 @@ export default function Pendaftaran() {
             penyakit,
             keluargadarurat,
             statusbyr,
+            didaftarkans,
           };
 
           await fetch(
@@ -267,7 +270,7 @@ export default function Pendaftaran() {
                             <label className="label">
                                 <span className="label-text">Golongan Darah</span>
                             </label>
-                            <input value={golongandarah} onChange={(e) => setGolongandarah(e.target.value)} type="text" name="Golongan Darah" placeholder="contoh : 'O+' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required/>
+                            <input value={golongandarah} onChange={(e) => setGolongandarah(e.target.value)} type="text" name="Golongan Darah" placeholder="contoh : 'O+' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" maxLength={4} required/>
                         </div>
                         <div className="form-control w-full max-w-xs">
                             <label className="label">

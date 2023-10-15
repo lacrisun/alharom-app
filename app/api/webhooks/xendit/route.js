@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma';
 
 export async function POST(request) {
+  const callbacktoken = process.env.XENDIT_WEBHOOK_SECRET
   const xenditXCallbackToken = 'Z9A3UpJEokuMaDXTBxF2CCv8oJcXmfN2pxVmhaQRuQqCvg9t';
 
   const xIncomingCallbackTokenHeader = request.headers.get('x-callback-token');
