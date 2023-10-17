@@ -28,7 +28,7 @@ export default function Navbar() {
                 <li><Link href="/" className="text-black hover:text-primary">Tentang Kami</Link></li>
                 <li><Link href="/pendaftaran" className="text-black hover:text-primary">Pendaftaran</Link></li>
                 <li><Link href="/program&paket" className="text-black hover:text-primary">Program & Paket</Link></li>
-                <li><Link href="/login" className="bg-primary hover:bg-secondary">Login Mentor</Link></li>
+                <li><Link href="/login" className="bg-primary text-white hover:bg-secondary">Login Mentor</Link></li>
                 </ul>
             </div>
             </div>
