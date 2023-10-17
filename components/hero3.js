@@ -9,7 +9,7 @@ export default function HeroTiga() {
             <div className="hero-overlay bg-primary/90">
                 <div className="w-full p-12 my-3 justify-start">
                     <div>
-                        <h1 className="text-5xl font-bold my-5">Pertanyaan terkait</h1>
+                        <h1 className="text-5xl font-bold my-5 text-white">Pertanyaan terkait</h1>
                         <div className="collapse mt-2 collapse-arrow bg-secondary">
                             <input type="checkbox" name="my-accordion-2" /> 
                             <div className="collapse-title text-xl font-medium text-black">
