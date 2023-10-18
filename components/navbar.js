@@ -1,7 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faHouse, faPhone, faTag, faUserPlus } from "@fortawesome/free-solid-svg-icons"
+import { faHouse, faPhone, faRightToBracket, faTag, faUserPlus } from "@fortawesome/free-solid-svg-icons"
 import { faCodepen } from "@fortawesome/free-brands-svg-icons"
 
 export default function Navbar() {
@@ -28,7 +28,7 @@ export default function Navbar() {
                 <li><Link href="/" className="text-black hover:text-primary">Tentang Kami</Link></li>
                 <li><Link href="/pendaftaran" className="text-black hover:text-primary">Pendaftaran</Link></li>
                 <li><Link href="/program&paket" className="text-black hover:text-primary">Program & Paket</Link></li>
-                <li><Link href="/login" className="bg-primary hover:bg-secondary">Login Mentor</Link></li>
+                <li><Link href="/mentor" className="bg-primary text-white hover:bg-secondary"><i><FontAwesomeIcon icon={faRightToBracket}></FontAwesomeIcon></i>Login Mentor</Link></li>
                 </ul>
             </div>
             </div>
@@ -39,6 +39,7 @@ export default function Navbar() {
             <li><Link href="/" className="hover:bg-neutral"><i><FontAwesomeIcon icon={faHouse}></FontAwesomeIcon></i>Tentang Kami</Link></li>
             <li><Link href="/pendaftaran" className="hover:bg-neutral"><i><FontAwesomeIcon icon={faUserPlus}></FontAwesomeIcon></i>Pendaftaran</Link></li>
             <li><Link href="/program&paket" className="hover:bg-neutral"><i><FontAwesomeIcon icon={faTag} /></i>Program & Paket</Link></li>
+            <li><Link href="/mentor" className="hover:bg-neutral"><i><FontAwesomeIcon icon={faRightToBracket} /></i>Login Mentor</Link></li>
             </ul>
         </div>
         </div>
