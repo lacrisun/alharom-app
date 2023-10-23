@@ -44,7 +44,7 @@ export default async function Profile() {
                                 </div>
                                 <div>
                                     <h3 className="text-2xl font-bold">Email</h3>
-                                    <p className="text-lg">gustipanji2006@gmail.com</p>
+                                    <p className="text-lg">{session?.user.email}</p>
                                 </div>
                             </div>
                         </div>

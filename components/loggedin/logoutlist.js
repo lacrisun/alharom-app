@@ -6,6 +6,6 @@ import { signOut } from "next-auth/react"
 
 export default function LogoutList() {
     return (
-        <li onClick={() => signOut()} className="hover:bg-neutral"><i><FontAwesomeIcon icon={faRightFromBracket} /></i>Keluar</li>
+        <li><a onClick={() => signOut()} className="hover:bg-neutral"><i><FontAwesomeIcon icon={faRightFromBracket} /></i>Keluar</a></li>
     )
 }
