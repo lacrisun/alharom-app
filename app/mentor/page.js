@@ -29,6 +29,9 @@ export default function Login() {
             setLoginerror(true)
         } else {
             setLoginsuccess(true)
+            setLoginerror(false)
+            await new Promise(resolve => setTimeout(resolve, 5000))
+            router.push("/profile")
         }
     }
 
