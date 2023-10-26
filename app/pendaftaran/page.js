@@ -54,11 +54,11 @@ export default function Pendaftaran() {
     const [statusbyr, setStatusbyr] = useState("BELUM_LUNAS")
     const [didaftarkans, setDidaftarkans] = useState("User/Sendiri")
 
-    if (session) {
-        useEffect(() => {
+    useEffect(() => {
+        if (session) {
             setDidaftarkans(session.user.fullname)
-        }, [])
-    }
+        }
+    }, [session])
 
     let price = 0
     if (paketumrah == 'Umrah Reguler (Silver)') {
