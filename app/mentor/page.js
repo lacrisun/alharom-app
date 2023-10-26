@@ -3,11 +3,13 @@
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { useState } from "react";
-import { signIn } from 'next-auth/react';
-import { useRouter } from "next/navigation";
+import { signIn, useSession } from 'next-auth/react';
+import { redirect, useRouter } from "next/navigation";
 
 export default function Login() {
     
+    const {data: session} = useSession()
+
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
 
@@ -35,6 +37,11 @@ export default function Login() {
         }
     }
 
+    if (session?.user) {
+        return (
+            redirect('/profile')
+        )
+    }
     return (
         <>
         

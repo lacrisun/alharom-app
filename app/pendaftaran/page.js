@@ -10,6 +10,8 @@ import { useRouter } from "next/navigation";
 import Footer from "@/components/footer";
 import { resolve } from "styled-jsx/css";
 import { Invoice as InvoiceClient, Xendit } from "xendit-node";
+import { useSession } from "next-auth/react";
+import NavbarLoggedIn from "@/components/loggedin/navbar";
 
 export default function Pendaftaran() {
     const router = useRouter()
@@ -19,6 +21,7 @@ export default function Pendaftaran() {
     
     const xenditInvoiceClient = new InvoiceClient({secretKey: secret})
 
+    const {data: session} = useSession()
 
     const [paketumrah, setPaketumrah] = useState("Umrah Reguler (Silver)");
     const [tipekamar, setTipekamar] = useState("Quad");
@@ -51,6 +54,11 @@ export default function Pendaftaran() {
     const [statusbyr, setStatusbyr] = useState("BELUM_LUNAS")
     const [didaftarkans, setDidaftarkans] = useState("User/Sendiri")
 
+    if (session) {
+        useEffect(() => {
+            setDidaftarkans(session.user.fullname)
+        }, [])
+    }
 
     let price = 0
     if (paketumrah == 'Umrah Reguler (Silver)') {
@@ -69,7 +77,6 @@ export default function Pendaftaran() {
     const randomStr = random.toString()
 
     const randomID = "ALHRM-" + randomStr
-    
 
     const handleSubmit = async (event) => {
         event.preventDefault()
@@ -172,7 +179,7 @@ export default function Pendaftaran() {
     return (
 
         <>
-        <Navbar/>
+        {session ? <NavbarLoggedIn profilepic={session.user.username}/> : <Navbar/>}
         <HeroDaft />
         <div className="hero min-h-screen bg-secondary">
             <div className="hero-content w-full flex-col lg:flex-row-reverse">

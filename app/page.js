@@ -16,7 +16,7 @@ export default async function Home() {
   return (
     <>
 
-      {session ? <NavbarLoggedIn /> : <Navbar />}
+      {session ? <NavbarLoggedIn profilepic={session.user.username}/> : <Navbar />}
       <HeroSatu />
       <HeroDua />
       <HeroTiga />

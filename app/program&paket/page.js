@@ -15,7 +15,7 @@ export default async function ProgramPaket () {
     return (
 
         <>
-        {session ? <NavbarLoggedIn /> : <Navbar />}
+        {session ? <NavbarLoggedIn profilepic={session.user.username}/> : <Navbar />}
         <HeroProg />
         <Paket />
         <Footer />

@@ -1,13 +1,16 @@
 import Image from "next/image"
 import Link from "next/link"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faHouse, faPhone, faRightFromBracket, faRightToBracket, faTag, faUserPlus } from "@fortawesome/free-solid-svg-icons"
+import { faHouse, faPhone, faRightFromBracket, faRightToBracket, faTag, faUser, faUserPlus } from "@fortawesome/free-solid-svg-icons"
 import { faCodepen } from "@fortawesome/free-brands-svg-icons"
-import { signOut } from "next-auth/react"
+import { signOut, useSession } from "next-auth/react"
 import LogoutBtn from "./logoutbtn"
 import LogoutList from "./logoutlist"
 
-export default function NavbarLoggedIn() {
+export default function NavbarLoggedIn({ profilepic }) {
+
+    const profilelink = `https://ioijksivulsyacpizroe.supabase.co/storage/v1/object/public/avatars/${profilepic}`
+
     return (
         <div className="drawer z-40 drawer-end">
         <input id="my-drawer-3" type="checkbox" className="drawer-toggle" /> 
@@ -31,6 +34,13 @@ export default function NavbarLoggedIn() {
                 <li><Link href="/" className="text-black hover:text-primary">Tentang Kami</Link></li>
                 <li><Link href="/pendaftaran" className="text-black hover:text-primary">Pendaftaran</Link></li>
                 <li><Link href="/program&paket" className="text-black hover:text-primary">Program & Paket</Link></li>
+                <li>
+                    <Link href="/profile" className="avatar p-0 mr-2">
+                        <div className="w-12 rounded-full">
+                            <img src={profilelink} />
+                        </div>
+                    </Link>
+                </li>
                 <LogoutBtn />
                 </ul>
             </div>
@@ -42,6 +52,7 @@ export default function NavbarLoggedIn() {
                 <li><Link href="/" className="hover:bg-neutral"><i><FontAwesomeIcon icon={faHouse}></FontAwesomeIcon></i>Tentang Kami</Link></li>
                 <li><Link href="/pendaftaran" className="hover:bg-neutral"><i><FontAwesomeIcon icon={faUserPlus}></FontAwesomeIcon></i>Pendaftaran</Link></li>
                 <li><Link href="/program&paket" className="hover:bg-neutral"><i><FontAwesomeIcon icon={faTag} /></i>Program & Paket</Link></li>
+                <li><Link href="/profile" className="hover:bg-neutral"><i><FontAwesomeIcon icon={faUser} /></i>Profil Akun</Link></li>
                 <LogoutList/>
             </ul>
         </div>
