@@ -14,7 +14,7 @@ export default async function Profile() {
 
     const profilepicture = `https://ioijksivulsyacpizroe.supabase.co/storage/v1/object/public/avatars/${session.user.username}`
 
-    if (session?.user) {
+    if (session) {
         return (
             <>
         
