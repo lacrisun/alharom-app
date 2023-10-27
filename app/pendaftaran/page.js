@@ -185,8 +185,8 @@ export default function Pendaftaran() {
             <div className="hero-content w-full flex-col lg:flex-row-reverse">
                 <div className="card flex-shrink-0 w-full shadow-2xl bg-primary">
                     <form onSubmit={handleSubmit} className="card-body">
-                        <h1 className="text-3xl text-bold">Pendaftaran</h1>
-                        <h1 className="text-xl text-normal">Masukkan data sesuai di KTP/Paspor anda!</h1>
+                        <h1 className="text-3xl text-bold text-white">Pendaftaran</h1>
+                        <h1 className="text-xl text-normal text-white">Masukkan data sesuai di KTP/Paspor anda!</h1>
                         <div className="form-control w-full max-w-xs">
                             <label className="label">
                                 <span className="label-text">Paket Umrah</span>

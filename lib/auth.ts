@@ -47,7 +47,8 @@ export const authOptions: NextAuthOptions = {
                     username: existingUser.username,
                     email: existingUser.email,
                     fullname: existingUser.nama_lengkap,
-                    phone: existingUser.nomor_telepon
+                    phone: existingUser.nomor_telepon,
+                    isadmin: existingUser.izin_admin,
                 }
 
             }
@@ -60,7 +61,8 @@ export const authOptions: NextAuthOptions = {
                     ...token,
                     username: user.username,
                     fullname: user.fullname,
-                    phone: user.phone
+                    phone: user.phone,
+                    isadmin: user.isadmin
                 }
             }
             return token
@@ -72,7 +74,8 @@ export const authOptions: NextAuthOptions = {
                     ...session.user,
                     username: token.username,
                     fullname: token.fullname,
-                    phone: token.phone
+                    phone: token.phone,
+                    isadmin: token.isadmin
                 }
             }
         },

@@ -51,15 +51,9 @@ model Mentor {
   nama_lengkap String @db.VarChar(255)
   email String @unique @db.VarChar(255)
   nomor_telepon String @db.VarChar(64)
+  tanggal_lahir String @db.VarChar(64)
   username String @unique @db.VarChar(64)
   password String @db.VarChar(64)
-}
-
-model Admin {
-  id Int @id @default(autoincrement())
-  nama_lengkap String @db.VarChar(255)
-  email String @unique @db.VarChar(255)
-  nomor_telepon String @db.VarChar(64)
-  username String @unique @db.VarChar(64)
-  password String @db.VarChar(64)
+  tanggal_bergabung DateTime @default(now())
+  izin_admin Boolean @default(false)
 }

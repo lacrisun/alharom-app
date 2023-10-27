@@ -52,8 +52,8 @@ export default function Login() {
             <div className="hero-content w-full flex-col lg:flex-row-reverse">
                 <div className="card flex-shrink-0 w-full shadow-2xl bg-primary">
                     <form onSubmit={handleSubmit} className="card-body">
-                        <h1 className="text-3xl text-bold">Login Mentor</h1>
-                        <h1 className="text-xl text-normal">Hanya untuk karyawan Al-Harom Bina Hati</h1>
+                        <h1 className="text-3xl text-bold text-white">Login Mentor</h1>
+                        <h1 className="text-xl text-normal text-white">Hanya untuk karyawan Al-Harom Bina Hati</h1>
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text">Email</span>
