@@ -21,13 +21,9 @@ export default function Pendaftaran() {
     
     const xenditInvoiceClient = new InvoiceClient({secretKey: secret})
 
-    const {data: session, status} = useSession()
+    const {data: session} = useSession()
 
-    if (status === "loading") {
-        return (
-            <h1>Loading...</h1>
-        )
-    }
+    
 
     const [paketumrah, setPaketumrah] = useState("Umrah Reguler (Silver)");
     const [tipekamar, setTipekamar] = useState("Quad");
