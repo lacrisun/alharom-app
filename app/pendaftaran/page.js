@@ -23,7 +23,7 @@ export default function Pendaftaran() {
 
     const {data: session} = useSession()
 
-    
+    // what
 
     const [paketumrah, setPaketumrah] = useState("Umrah Reguler (Silver)");
     const [tipekamar, setTipekamar] = useState("Quad");
