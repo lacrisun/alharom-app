@@ -12,9 +12,8 @@ export default async function Profile() {
     const session = await getServerSession(authOptions)
     console.log(session)
 
-    const profilepicture = `https://ioijksivulsyacpizroe.supabase.co/storage/v1/object/public/avatars/${session.user.username}`
-
     if (session) {
+        const profilepicture = `https://ioijksivulsyacpizroe.supabase.co/storage/v1/object/public/avatars/${session.user.username}`
         return (
             <>
         
