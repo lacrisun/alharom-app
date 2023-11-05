@@ -12,6 +12,7 @@ import { resolve } from "styled-jsx/css";
 import { Invoice as InvoiceClient, Xendit } from "xendit-node";
 import { useSession } from "next-auth/react";
 import NavbarLoggedIn from "@/components/loggedin/navbar";
+import LoadingPage from "@/components/loading";
 
 export default function Pendaftaran() {
     const router = useRouter()
@@ -21,7 +22,7 @@ export default function Pendaftaran() {
     
     const xenditInvoiceClient = new InvoiceClient({secretKey: secret})
 
-    const {data: session} = useSession()
+    const {data: session, status} = useSession()
 
     // what
 
@@ -177,6 +178,12 @@ export default function Pendaftaran() {
         }
         setSubmitted(true);
   
+    }
+
+    if (status === "loading") {
+        return (
+            < LoadingPage />
+        )
     }
     return (
 
