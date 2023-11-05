@@ -22,7 +22,7 @@ export default async function PendaftaranLayout({ children }) {
   return (
     <html lang="en">
       <body className={myFont.className}>
-        <NextAuthSessionProvider/>
+        <NextAuthSessionProvider>{children}</NextAuthSessionProvider>
       </body>
     </html>
   )
