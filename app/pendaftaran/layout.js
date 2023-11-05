@@ -5,6 +5,7 @@ import { config } from '@fortawesome/fontawesome-svg-core'
 import '@fortawesome/fontawesome-svg-core/styles.css'
 import { getServerSession } from 'next-auth'
 import SessProv from '@/components/SessionProvider'
+import NextAuthSessionProvider from '@/components/SessionProvider'
 
 require('dotenv').config()
 config.autoAddCss = false
@@ -18,12 +19,11 @@ export const metadata = {
 }
 
 export default async function PendaftaranLayout({ children }) {
-  const session = await getServerSession()
   return (
     <html lang="en">
       <body className={myFont.className}>
-        <SessProv session={session}>{children}</SessProv>
-        </body>
+        <NextAuthSessionProvider/>
+      </body>
     </html>
   )
 }
