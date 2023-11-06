@@ -7,7 +7,7 @@ import { signOut, useSession } from "next-auth/react"
 import LogoutBtn from "./logoutbtn"
 import LogoutList from "./logoutlist"
 
-export default function NavbarLoggedIn({ profilepic }) {
+export default function NavbarLoggedIn({ profilepic, admin }) {
 
     const profilelink = `https://ioijksivulsyacpizroe.supabase.co/storage/v1/object/public/avatars/${profilepic}`
 
@@ -41,6 +41,10 @@ export default function NavbarLoggedIn({ profilepic }) {
                         </div>
                     </Link>
                 </li>
+                {
+                    admin && <li><Link href="/admin" className="btn btn-primary">Dashboard</Link></li>
+
+                }
                 <LogoutBtn />
                 </ul>
             </div>

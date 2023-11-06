@@ -4,7 +4,7 @@ import AdminNav from "@/components/admincomponents/adminnavbar";
 import Dashboard from "@/components/admincomponents/dashboard";
 import LoadingPage from "@/components/loading";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function Admin() {
@@ -13,26 +13,22 @@ export default function Admin() {
 
     const adminRole = session?.user.isadmin
 
-    useEffect(() => {
-        if (!adminRole) {
-            return (
-                router.push('/')
-            )
-
-        }
-    }, [adminRole])
-
     if (status === 'loading') {
         return (
             <LoadingPage />
         )
     }
+    if (adminRole) {
+        return (
+            <>
+            
+            <h1>Hai semua!</h1>
+            
+            </>
+        )
+    }
     return (
-        <>
-        
-        <h1>tes</h1>
-
-        </>
+        redirect('/')
     )
 
 }

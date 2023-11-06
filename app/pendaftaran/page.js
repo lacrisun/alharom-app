@@ -188,7 +188,7 @@ export default function Pendaftaran() {
     return (
 
         <>
-        {session ? <NavbarLoggedIn profilepic={session.user.username}/> : <Navbar/>}
+        {session ? <NavbarLoggedIn profilepic={session.user.username} admin={session.user.isadmin}/> : <Navbar/>}
         <HeroDaft />
         <div className="hero min-h-screen bg-secondary">
             <div className="hero-content w-full flex-col lg:flex-row-reverse">
