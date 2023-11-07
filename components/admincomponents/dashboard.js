@@ -2,7 +2,8 @@ import prisma from "@/lib/prisma"
 
 export default function Dashboard() {
 
-    const getData = async (e) => {
+    const getData = async (event) => {
+        event.preventDefault()
         const res = await prisma.user.count()
         return res
     }
