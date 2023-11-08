@@ -15,10 +15,15 @@ export default function Admin() {
     const { data: session, status } = useSession();
 
     const [userCount, setUserCount] = useState(0)
+    const [userpermonth, setUserpermonth] = useState(0)
     const [dashboard, setDashboard] = useState(true)
     const [umrahtable, setUmrahTable] = useState(false)
 
     const adminRole = session?.user.isadmin;
+
+    const date = new Date()
+    const today = date.toLocaleString('default', { day: 'numeric', month: 'long', year: 'numeric'})
+    
 
     const fetchUserCount = async () => {
         try {
@@ -30,9 +35,19 @@ export default function Admin() {
         }
     };
 
+    const fetchCurrentMonthUserCount = async () => {
+        try {
+            const response = await fetch('/api/userpermonth');
+            const data = await response.json();
+            setUserpermonth(data.responsedata)
+        } catch (error) {
+            console.error("Error fetching user count:", error);
+        }
+    };
 
     useEffect(() => {
         fetchUserCount()
+        fetchCurrentMonthUserCount()
     }, [])
 
 
@@ -63,10 +78,16 @@ export default function Admin() {
                             <div className="flex-1 px-2 mx-2 text-black">Admin Page</div>
                         </div>
                         <div className="grid min-h-screen z-40 bg-red-950">
-                            <div className="stats h-min w-min gap-4 m-4 shadow">
+                            <div className="stats h-min w-min m-4 shadow stats-vertical lg:stats-horizontal">
                                 <div className="stat bg-primary">
                                     <div className="stat-title">Total Jamaah</div>
-                                    <div className="stat-value">{userCount}</div>                                   
+                                    <div className="stat-value">{userCount}</div>
+                                    <div className="stat-desc">Jumlah jamaah yang terdata dalam database</div>                                   
+                                </div>
+                                <div className="stat bg-primary">
+                                    <div className="stat-title">Total Jamaah Bulan Ini</div>
+                                    <div className="stat-value">{userpermonth}</div>       
+                                    <div className="stat-desc">Sesuai hari ini, {today}</div>                            
                                 </div>
                             </div>
                         </div>
@@ -106,7 +127,7 @@ export default function Admin() {
                     <div className="drawer-side z-50">
                         <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
                         <ul className="menu p-4 w-80 min-h-full bg-primary">
-                            <li className="text-3xl text-white">Halo, Admin!</li>
+                            <li className="text-3xl text-white">Halo, {session.user.fullname}</li>
                             <div className="divider"></div>
                             <li className="text-lg" onClick={() => { setDashboard(true); setUmrahTable(false); }}>
                                 <a>
