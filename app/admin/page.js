@@ -4,9 +4,9 @@ import AdminNav from "@/components/admincomponents/adminnavbar";
 import Dashboard from "@/components/admincomponents/dashboard";
 import LoadingPage from "@/components/loading";
 import prisma from "@/lib/prisma";
-import { faChartLine, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faChartLine, faRightFromBracket, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -18,6 +18,8 @@ export default function Admin() {
     const [userpermonth, setUserpermonth] = useState(0)
     const [dashboard, setDashboard] = useState(true)
     const [umrahtable, setUmrahTable] = useState(false)
+
+    const [users, setUsers] = useState([])
 
     const adminRole = session?.user.isadmin;
 
@@ -45,9 +47,22 @@ export default function Admin() {
         }
     };
 
+    const fetchUsers = async () => {
+        try {
+            const response = await fetch('/api/userlist')
+            const data = await response.json()
+            const users = data.responsedata
+            const array = JSON.parse(users)
+            setUsers(array)
+        } catch (error) {
+            console.error("Error fetching user", error)
+        }
+    }
+
     useEffect(() => {
         fetchUserCount()
         fetchCurrentMonthUserCount()
+        fetchUsers()
     }, [])
 
 
@@ -114,12 +129,29 @@ export default function Admin() {
                             <div className="flex-1 px-2 mx-2 text-black">Admin Page</div>
                         </div>
                         <div className="grid min-h-screen z-40 bg-red-950">
-                            <div className="stats h-min w-min gap-4 m-4 shadow">
-                                <div className="stat bg-primary">
-                                    <div className="stat-title">what</div>
-                                    <div className="stat-value">{userCount}</div>                                   
+                                <div className="overflow-x-auto m-4">
+                                    <table className="table text-white">
+                                        {/* head */}
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Nama</th>
+                                                <th>Email</th>
+                                                <th>Data Dibuat</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {users && users.map((user) => (
+                                                <tr key={user.id}>
+                                                    <td>{user.id}</td>
+                                                    <td>{user.nama_lengkap}</td>
+                                                    <td>{user.email}</td>
+                                                    <td>{user.data_dibuat}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
                                 </div>
-                            </div>
                         </div>
                     </div>
 
@@ -129,7 +161,7 @@ export default function Admin() {
                         <ul className="menu p-4 w-80 min-h-full bg-primary">
                             <li className="text-3xl text-white">Halo, {session.user.fullname}</li>
                             <div className="divider"></div>
-                            <li className="text-lg" onClick={() => { setDashboard(true); setUmrahTable(false); }}>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(true); setUmrahTable(false); }}>
                                 <a>
                                     <i>
                                         <FontAwesomeIcon icon={faChartLine} />
@@ -137,12 +169,20 @@ export default function Admin() {
                                     Dashboard
                                 </a>
                             </li>
-                            <li className="text-lg" onClick={() => { setDashboard(false); setUmrahTable(true); }}>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setUmrahTable(true); }}>
                                 <a>
                                     <i>
                                         <FontAwesomeIcon icon={faUsers} />
                                     </i>
                                     Daftar Calon Umrah
+                                </a>
+                            </li>
+                            <li className="text-white text-lg" onClick={() => signOut()}>
+                                <a>
+                                    <i>
+                                        <FontAwesomeIcon icon={faRightFromBracket} />
+                                    </i>
+                                    Logout/Keluar
                                 </a>
                             </li>
                         </ul>

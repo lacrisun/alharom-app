@@ -36,10 +36,10 @@ export default function Navbar() {
         <div className="drawer drawer-side">
             <label htmlFor="my-drawer-3" className="drawer-overlay"></label> 
             <ul className="menu p-4 w-80 min-h-full bg-primary">
-            <li><Link href="/" className="hover:bg-neutral"><i><FontAwesomeIcon icon={faHouse}></FontAwesomeIcon></i>Tentang Kami</Link></li>
-            <li><Link href="/pendaftaran" className="hover:bg-neutral"><i><FontAwesomeIcon icon={faUserPlus}></FontAwesomeIcon></i>Pendaftaran</Link></li>
-            <li><Link href="/program&paket" className="hover:bg-neutral"><i><FontAwesomeIcon icon={faTag} /></i>Program & Paket</Link></li>
-            <li><Link href="/mentor" className="hover:bg-neutral"><i><FontAwesomeIcon icon={faRightToBracket} /></i>Login Mentor</Link></li>
+            <li><Link href="/" className="text-white hover:bg-neutral"><i><FontAwesomeIcon icon={faHouse}></FontAwesomeIcon></i>Tentang Kami</Link></li>
+            <li><Link href="/pendaftaran" className="text-white hover:bg-neutral"><i><FontAwesomeIcon icon={faUserPlus}></FontAwesomeIcon></i>Pendaftaran</Link></li>
+            <li><Link href="/program&paket" className="text-white hover:bg-neutral"><i><FontAwesomeIcon icon={faTag} /></i>Program & Paket</Link></li>
+            <li><Link href="/mentor" className="text-white hover:bg-neutral"><i><FontAwesomeIcon icon={faRightToBracket} /></i>Login Mentor</Link></li>
             </ul>
         </div>
         </div>

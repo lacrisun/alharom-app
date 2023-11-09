@@ -21,7 +21,7 @@ export default async function Profile() {
 
             <div className="hero min-h-screen bg-secondary">
                 <div className="hero-content w-full flex-col lg:flex-row-reverse">
-                    <div className="card flex-shrink-0 w-full shadow-2xl bg-primary">
+                    <div className="card flex-shrink-0 w-full shadow-2xl bg-primary text-white">
                         <div className="avatar items-center p-5">
                             <div className="w-24 rounded-full">
                                 <img src={profilepicture} />
