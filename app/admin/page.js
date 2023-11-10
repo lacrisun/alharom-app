@@ -4,7 +4,7 @@ import AdminNav from "@/components/admincomponents/adminnavbar";
 import Dashboard from "@/components/admincomponents/dashboard";
 import LoadingPage from "@/components/loading";
 import prisma from "@/lib/prisma";
-import { faChartLine, faRightFromBracket, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faChartLine, faHome, faRightFromBracket, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { signOut, useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
@@ -65,6 +65,11 @@ export default function Admin() {
         fetchUsers()
     }, [])
 
+    const refreshAll = () => {
+        fetchUserCount()
+        fetchCurrentMonthUserCount()
+        fetchUsers()
+    }
 
     if (status === 'loading') {
         return <LoadingPage />;
@@ -91,6 +96,7 @@ export default function Admin() {
                                 </label>
                             </div>
                             <div className="flex-1 px-2 mx-2 text-black">Admin Page</div>
+                            <div className="btn btn-primary h-min w-min m-4" onClick={refreshAll()}>Refresh</div>
                         </div>
                         <div className="grid min-h-screen z-40 bg-red-950">
                             <div className="stats h-min w-min m-4 shadow stats-vertical lg:stats-horizontal">
@@ -127,6 +133,7 @@ export default function Admin() {
                                 </label>
                             </div>
                             <div className="flex-1 px-2 mx-2 text-black">Admin Page</div>
+                            <div className="btn btn-primary h-min w-min m-4" onClick={refreshAll()}>Refresh</div>
                         </div>
                         <div className="grid min-h-screen z-40 bg-red-950">
                                 <div className="overflow-x-auto m-4">
@@ -183,6 +190,14 @@ export default function Admin() {
                                         <FontAwesomeIcon icon={faRightFromBracket} />
                                     </i>
                                     Logout/Keluar
+                                </a>
+                            </li>
+                            <li className="text-white text-lg" onClick={() => signOut()}>
+                                <a>
+                                    <i>
+                                        <FontAwesomeIcon icon={faHome} />
+                                    </i>
+                                    Balik ke Halaman Utama
                                 </a>
                             </li>
                         </ul>
