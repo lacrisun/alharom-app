@@ -60,7 +60,6 @@ function UserPerMonth() {
 
 function UserList() {
     const { data, error, isLoading } = useSWR('/api/userlist', fetcher)
-    const users = data.responsedata
     if (isLoading) {
         return (
             <div className="overflow-x-auto m-4">
@@ -81,6 +80,7 @@ function UserList() {
             </div>
         )
     }
+    const users = data.responsedata
     const array = JSON.parse(users)
     return (
         <div className="overflow-x-auto m-4">
