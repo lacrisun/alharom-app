@@ -29,7 +29,7 @@ export default function Admin() {
 
     const fetchUserCount = async () => {
         try {
-            const response = await fetch('/api/usercount', {cache: 'no-store'});
+            const response = await fetch('/api/usercount', {cache: 'no-store', next: { revalidate: 0 }});
             const data = await response.json();
             setUserCount(data.responsedata)
         } catch (error) {
@@ -39,7 +39,7 @@ export default function Admin() {
 
     const fetchCurrentMonthUserCount = async () => {
         try {
-            const response = await fetch('/api/userpermonth', {cache: 'no-store'});
+            const response = await fetch('/api/userpermonth', {cache: 'no-store', next: { revalidate: 0 }});
             const data = await response.json();
             setUserpermonth(data.responsedata)
         } catch (error) {
@@ -49,7 +49,7 @@ export default function Admin() {
 
     const fetchUsers = async () => {
         try {
-            const response = await fetch('/api/userlist', {cache: 'no-store'})
+            const response = await fetch('/api/userlist', {cache: 'no-store', next: { revalidate: 0 }})
             const data = await response.json()
             const users = data.responsedata
             const array = JSON.parse(users)
