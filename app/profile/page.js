@@ -17,7 +17,7 @@ export default async function Profile() {
         return (
             <>
         
-            <NavbarLoggedIn profilepic={session.user.username} admin={session.user.isadmin}/>
+            <NavbarLoggedIn profilepic={session.user.username} admin={session.user.role}/>
 
             <div className="hero min-h-screen bg-secondary">
                 <div className="hero-content w-full flex-col lg:flex-row-reverse">

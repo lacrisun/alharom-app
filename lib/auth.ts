@@ -11,7 +11,7 @@ export const authOptions: NextAuthOptions = {
         strategy: "jwt"
     },
     pages: {
-        signIn: '/mentor'
+        signIn: '/login'
     },
     providers: [
         CredentialsProvider({
@@ -25,7 +25,7 @@ export const authOptions: NextAuthOptions = {
                     return null
                 }
             
-                const existingUser = await prisma.mentor.findUnique({
+                const existingUser = await prisma.accounts.findUnique({
                     where: {
                         email: credentials.email
                     }
@@ -48,7 +48,7 @@ export const authOptions: NextAuthOptions = {
                     email: existingUser.email,
                     fullname: existingUser.nama_lengkap,
                     phone: existingUser.nomor_telepon,
-                    isadmin: existingUser.izin_admin,
+                    role: existingUser.role,
                 }
 
             }
@@ -62,7 +62,7 @@ export const authOptions: NextAuthOptions = {
                     username: user.username,
                     fullname: user.fullname,
                     phone: user.phone,
-                    isadmin: user.isadmin
+                    role: user.role
                 }
             }
             return token
@@ -75,7 +75,7 @@ export const authOptions: NextAuthOptions = {
                     username: token.username,
                     fullname: token.fullname,
                     phone: token.phone,
-                    isadmin: token.isadmin
+                    role: token.role
                 }
             }
         },

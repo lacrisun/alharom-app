@@ -28,7 +28,7 @@ export default function Navbar() {
                 <li><Link href="/" className="text-black hover:text-primary">Tentang Kami</Link></li>
                 <li><Link href="/pendaftaran" className="text-black hover:text-primary">Pendaftaran</Link></li>
                 <li><Link href="/program&paket" className="text-black hover:text-primary">Program & Paket</Link></li>
-                <li><Link href="/mentor" className="bg-primary text-white hover:bg-secondary"><i><FontAwesomeIcon icon={faRightToBracket}></FontAwesomeIcon></i>Login Mentor</Link></li>
+                <li><Link href="/login" className="bg-primary text-white hover:bg-secondary"><i><FontAwesomeIcon icon={faRightToBracket}></FontAwesomeIcon></i>Login</Link></li>
                 </ul>
             </div>
             </div>
@@ -39,7 +39,7 @@ export default function Navbar() {
             <li><Link href="/" className="text-white hover:bg-neutral"><i><FontAwesomeIcon icon={faHouse}></FontAwesomeIcon></i>Tentang Kami</Link></li>
             <li><Link href="/pendaftaran" className="text-white hover:bg-neutral"><i><FontAwesomeIcon icon={faUserPlus}></FontAwesomeIcon></i>Pendaftaran</Link></li>
             <li><Link href="/program&paket" className="text-white hover:bg-neutral"><i><FontAwesomeIcon icon={faTag} /></i>Program & Paket</Link></li>
-            <li><Link href="/mentor" className="text-white hover:bg-neutral"><i><FontAwesomeIcon icon={faRightToBracket} /></i>Login Mentor</Link></li>
+            <li><Link href="/login" className="text-white hover:bg-neutral"><i><FontAwesomeIcon icon={faRightToBracket} /></i>Login</Link></li>
             </ul>
         </div>
         </div>

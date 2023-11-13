@@ -12,12 +12,12 @@ config.autoAddCss = false
 const myFont = localFont({ src: '../../public/fonts/Bicyclette-Bold.ttf' })
 
 export const metadata = {
-  title: 'Login Mentor',
+  title: 'Login',
   description: 'Tuntut Impian, Abadikan Kenangan.',
   icons: [{ rel: 'icon', url: Favicon.src }] 
 }
 
-export default async function MentorLayout({ children }) {
+export default async function LoginLayout({ children }) {
   const session = await getServerSession()
   return (
     <html lang="en">

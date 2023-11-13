@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "status_kawin" SET DATA TYPE VARCHAR(20),
+ALTER COLUMN "tipe_kamar" SET DATA TYPE VARCHAR(20);

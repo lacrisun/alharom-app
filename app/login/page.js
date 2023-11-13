@@ -5,10 +5,11 @@ import Footer from "@/components/footer";
 import { useState } from "react";
 import { signIn, useSession } from 'next-auth/react';
 import { redirect, useRouter } from "next/navigation";
+import LoadingPage from "@/components/loading";
 
 export default function Login() {
     
-    const {data: session} = useSession()
+    const {data: session, status} = useSession()
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -37,6 +38,11 @@ export default function Login() {
         }
     }
 
+    if (status === 'loading') {
+        return (
+            <LoadingPage/>
+        )
+    }
     if (session?.user) {
         return (
             redirect('/profile')
@@ -52,8 +58,8 @@ export default function Login() {
             <div className="hero-content w-full flex-col lg:flex-row-reverse">
                 <div className="card flex-shrink-0 w-full shadow-2xl bg-primary">
                     <form onSubmit={handleSubmit} className="card-body">
-                        <h1 className="text-3xl text-bold text-white">Login Mentor</h1>
-                        <h1 className="text-xl text-normal text-white">Hanya untuk karyawan Al-Harom Bina Hati</h1>
+                        <h1 className="text-3xl text-bold text-white">Login</h1>
+                        <h1 className="text-xl text-normal text-white">Jika belum memiliki akun, klik disini</h1>
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text">Email</span>

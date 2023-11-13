@@ -10,6 +10,11 @@ import LogoutList from "./logoutlist"
 export default function NavbarLoggedIn({ profilepic, admin }) {
 
     const profilelink = `https://ioijksivulsyacpizroe.supabase.co/storage/v1/object/public/avatars/${profilepic}`
+    let roleAdmin = false
+
+    if (admin === 'Admin') {
+        roleAdmin = true
+    }
 
     return (
         <div className="drawer z-40 drawer-end">
@@ -42,7 +47,7 @@ export default function NavbarLoggedIn({ profilepic, admin }) {
                     </Link>
                 </li>
                 {
-                    admin && <li><Link href="/admin" className="btn btn-primary">Dashboard</Link></li>
+                    roleAdmin && <li><Link href="/admin" className="btn btn-primary">Dashboard</Link></li>
 
                 }
                 <LogoutBtn />
@@ -58,7 +63,7 @@ export default function NavbarLoggedIn({ profilepic, admin }) {
                 <li><Link href="/program&paket" className="text-white hover:bg-neutral"><i><FontAwesomeIcon icon={faTag} /></i>Program & Paket</Link></li>
                 <li><Link href="/profile" className="text-white hover:bg-neutral"><i><FontAwesomeIcon icon={faUser} /></i>Profil Akun</Link></li>
                 {
-                    admin && <li><Link href="/admin" className="text-white hover:bg-neutral">Dashboard Admin</Link></li>
+                    roleAdmin && <li><Link href="/admin" className="text-white hover:bg-neutral">Dashboard Admin</Link></li>
 
                 }
                 <LogoutList/>

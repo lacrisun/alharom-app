@@ -4,9 +4,10 @@ import AdminNav from "@/components/admincomponents/adminnavbar";
 import Dashboard from "@/components/admincomponents/dashboard";
 import LoadingPage from "@/components/loading";
 import prisma from "@/lib/prisma";
-import { faChartLine, faRightFromBracket, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faChartLine, faHome, faRightFromBracket, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -21,7 +22,7 @@ export default function Admin() {
 
     const [users, setUsers] = useState([])
 
-    const adminRole = session?.user.isadmin;
+    const roles = session?.user.role;
 
     const date = new Date()
     const today = date.toLocaleString('default', { day: 'numeric', month: 'long', year: 'numeric'})
@@ -69,7 +70,7 @@ export default function Admin() {
     if (status === 'loading') {
         return <LoadingPage />;
     }
-    if (adminRole) {
+    if (roles === 'Admin') {
         return (
             <>
                 <div className="drawer lg:drawer-open">
@@ -184,6 +185,14 @@ export default function Admin() {
                                     </i>
                                     Logout/Keluar
                                 </a>
+                            </li>
+                            <li className="text-white text-lg">
+                                <Link href="/">
+                                    <i>
+                                        <FontAwesomeIcon icon={faHome} />
+                                    </i>
+                                    Balik ke halaman utama
+                                </Link>
                             </li>
                         </ul>
                     </div>

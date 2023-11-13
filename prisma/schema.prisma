@@ -14,46 +14,53 @@ enum StatPay {
   LUNAS
   BELUM_LUNAS
 }
+
+enum Roles {
+  Admin
+  Mentor
+  User
+}
 model User {
   id        String      @id 
-  paket_umrah    String      @db.VarChar(42)
-  tipe_kamar     String      @db.VarChar(42)
-  nama_lengkap      String      @db.VarChar(64)
-  nik       String      @db.VarChar(255)
-  tempat_lahir String      @db.VarChar(255)
-  tanggal_lahir  String      @db.VarChar(255)
-  ayah_kandung   String      @db.VarChar(64)
-  nomor_paspor String      @db.VarChar(255)
-  paspor_expired  String      @db.VarChar(255)
-  tempat_paspor String      @db.VarChar(255)
-  paspor_dibuat String      @db.VarChar(255)
-  jenis_kelamin  String      @db.VarChar(42)
-  golongan_darah  String      @db.VarChar(4)
-  status_kawin   String      @db.VarChar(42)     
-  nama_waris String      @db.VarChar(64)
-  hubungan_waris  String      @db.VarChar(255)
+  paket_umrah    String      @db.VarChar(50)
+  tipe_kamar     String      @db.VarChar(20)
+  nama_lengkap      String      @db.VarChar(50)
+  nik       String      @db.VarChar(30)
+  tempat_lahir String      @db.VarChar(50)
+  tanggal_lahir  String      @db.VarChar(16)
+  ayah_kandung   String      @db.VarChar(50)
+  nomor_paspor String      @db.VarChar(30)
+  paspor_expired  String      @db.VarChar(16)
+  tempat_paspor String      @db.VarChar(50)
+  paspor_dibuat String      @db.VarChar(16)
+  jenis_kelamin  String      @db.VarChar(15)
+  golongan_darah  String      @db.VarChar(6)
+  status_kawin   String      @db.VarChar(20)     
+  nama_waris String      @db.VarChar(50)
+  hubungan_waris  String      @db.VarChar(50)
   alamat    String      @db.VarChar(255)
-  email     String      @db.VarChar(64)
-  nomor_telpon  String      @db.VarChar(255)
-  pengalaman_umrah String      @db.VarChar(64)
-  pendidikan String      @db.VarChar(64)
-  pekerjaan String      @db.VarChar(42)
-  penyakit  String      @db.VarChar(255)
-  keluarga_darurat String      @db.VarChar(255)
+  email     String      @db.VarChar(50)
+  nomor_telpon  String      @db.VarChar(15)
+  pengalaman_umrah String      @db.VarChar(20)
+  pendidikan String      @db.VarChar(20)
+  pekerjaan String      @db.VarChar(50)
+  penyakit  String      @db.VarChar(50)
+  keluarga_darurat String      @db.VarChar(50)
   paystatus StatPay     @default(BELUM_LUNAS)
-  didaftarkan String    @db.VarChar(255)
+  didaftarkan String    @db.VarChar(50)
   data_dibuat DateTime @default(now())
   data_updated DateTime @updatedAt
 }
 
-model Mentor {
+model Accounts {
   id String @id
-  nama_lengkap String @db.VarChar(255)
-  email String @unique @db.VarChar(255)
-  nomor_telepon String @db.VarChar(64)
-  tanggal_lahir String @db.VarChar(64)
-  username String @unique @db.VarChar(64)
-  password String @db.VarChar(64)
+  nama_lengkap String @db.VarChar(50)
+  email String @unique @db.VarChar(50)
+  nomor_telepon String @db.VarChar(50)
+  tanggal_lahir String @db.VarChar(20)
+  username String @unique @db.VarChar(20)
+  password String @db.VarChar(255)
   tanggal_bergabung DateTime @default(now())
-  izin_admin Boolean @default(false)
+  sisa_pembayaran String @db.VarChar(30)
+  role Roles @default(User)
 }

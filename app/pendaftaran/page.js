@@ -13,6 +13,7 @@ import { Invoice as InvoiceClient, Xendit } from "xendit-node";
 import { useSession } from "next-auth/react";
 import NavbarLoggedIn from "@/components/loggedin/navbar";
 import LoadingPage from "@/components/loading";
+import { z } from "zod";
 
 export default function Pendaftaran() {
     const router = useRouter()
@@ -47,7 +48,7 @@ export default function Pendaftaran() {
     const [notelponhp, setNotelponhp] = useState("");
     const [pengalaman, setPengalaman] = useState("Ke-1");
     const [pendidikanterakhir, setPendidikanterakhir] = useState("SD");
-    const [pekerjaan, setPekerjaan] = useState("PNS");
+    const [pekerjaan, setPekerjaan] = useState("");
     const [penyakit, setPenyakit] = useState("");
     const [keluargadarurat, setKeluargadarurat] = useState("");
 
@@ -58,7 +59,7 @@ export default function Pendaftaran() {
     const [didaftarkans, setDidaftarkans] = useState("User/Sendiri")
 
     useEffect(() => {
-        if (session) {
+        if (session?.user.role === 'Mentor' || session?.user.role === 'Admin') {
             setDidaftarkans(session.user.fullname)
         }
     }, [session])
@@ -81,12 +82,86 @@ export default function Pendaftaran() {
 
     const randomID = "ALHRM-" + randomStr
 
+    const schema = z.object({
+        namalengkap: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        nonik: z.string().max(30, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        tempatlahir: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        ayahkandung: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        nopaspor: z.string().max(30, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        tempatpaspor: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        golongandarah: z.string().max(6, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        namawaris: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        hubunganwaris: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        alamat: z.string().max(255, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        email: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        notelponhp: z.string().max(15, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        pekerjaan: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        penyakit: z.string().max(50, "Tidak boleh melebihi batas huruf"),
+        keluargadarurat: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+    })
+
     const handleSubmit = async (event) => {
         event.preventDefault()
         setSubmitting(true)
 
         let statusinv
         let linkinvoice
+
+
+        try {
+            const userbody = {
+                randomID,
+                paketumrah,
+                tipekamar,
+                namalengkap,
+                nonik,
+                tempatlahir,
+                tanggallahir,
+                ayahkandung,
+                nopaspor,
+                expirepaspor,
+                tempatpaspor,
+                pasporissued,
+                jeniskelamin,
+                golongandarah,
+                statuskawin,
+                namawaris,
+                hubunganwaris,
+                alamat,
+                email,
+                notelponhp,
+                pengalaman,
+                pendidikanterakhir,
+                pekerjaan,
+                penyakit,
+                keluargadarurat,
+                statusbyr,
+                didaftarkans,
+            };
+
+            const validationResult = schema.safeParse(userbody);
+
+            if (validationResult.success) {
+                await fetch("/api/submitdata", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(userbody),
+                });
+
+                setSubmitting(false);
+            } else {
+                console.error(validationResult.error);
+                setSubmitfail(true);
+                setSubmitted(false);
+            }
+        } catch (error) {
+            console.error(error);
+            setSubmitfail(true);
+            setSubmitted(false);
+        }
+        setSubmitted(true);
 
         try {
             const data = {
@@ -119,65 +194,8 @@ export default function Pendaftaran() {
             console.log(error)
         }
 
+        await new Promise(resolve => setTimeout(resolve, 2000))
         router.push(linkinvoice)
-
-        try {
-          const userbody = {
-            randomID,
-            paketumrah,
-            tipekamar,
-            namalengkap,
-            nonik,
-            tempatlahir,
-            tanggallahir,
-            ayahkandung,
-            nopaspor,
-            expirepaspor,
-            tempatpaspor,
-            pasporissued,
-            jeniskelamin,
-            golongandarah,
-            statuskawin,
-            namawaris,
-            hubunganwaris,
-            alamat,
-            email,
-            notelponhp,
-            pengalaman,
-            pendidikanterakhir,
-            pekerjaan,
-            penyakit,
-            keluargadarurat,
-            statusbyr,
-            didaftarkans,
-          };
-
-          await fetch(
-            "/api/submitdata",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type":
-                  "application/json",
-              },
-              body: JSON.stringify(
-                userbody
-              ),
-            }
-          );
-
-          setSubmitting(
-            false
-          );
-        } catch (error) {
-          console.error(
-            error
-          );
-          setSubmitfail(true);
-          setSubmitted(false);
-        }
-        setSubmitted(true);
-  
     }
 
     if (status === 'loading') {
@@ -188,7 +206,7 @@ export default function Pendaftaran() {
     return (
 
         <>
-        {session ? <NavbarLoggedIn profilepic={session.user.username} admin={session.user.isadmin}/> : <Navbar/>}
+        {session ? <NavbarLoggedIn profilepic={session.user.username} admin={session.user.role}/> : <Navbar/>}
         <HeroDaft />
         <div className="hero min-h-screen bg-secondary">
             <div className="hero-content w-full flex-col lg:flex-row-reverse">
@@ -223,19 +241,19 @@ export default function Pendaftaran() {
                             <label className="label">
                                 <span className="label-text">Nama Lengkap</span>
                             </label>
-                            <input value={namalengkap} onChange={(e) => setNamalengkap(e.target.value)} type="text" name="Nama" placeholder="contoh : 'Agus Budiman' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required/>
+                            <input value={namalengkap} onChange={(e) => setNamalengkap(e.target.value)} type="text" name="Nama" placeholder="contoh : 'Agus Budiman' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50}/>
                         </div>
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text">No. KTP/NIK</span>
                             </label>
-                            <input value={nonik} onChange={(e) => setNonik(e.target.value)} type="number" name="No. KTP/NIK" placeholder="1471110000000000" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required/>
+                            <input value={nonik} onChange={(e) => setNonik(e.target.value)} type="number" name="No. KTP/NIK" placeholder="1471110000000000" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={30}/>
                         </div>
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text">Tempat Lahir</span>
                             </label> 
-                            <input value={tempatlahir} onChange={(e) => setTempatlahir(e.target.value)} type="text" name="Tempat Lahir" placeholder="Kota Pekanbaru" className="bg-secondary placeholder-slate-400 text-slate-950 textarea textarea-bordered" required/>
+                            <input value={tempatlahir} onChange={(e) => setTempatlahir(e.target.value)} type="text" name="Tempat Lahir" placeholder="Kota Pekanbaru" className="bg-secondary placeholder-slate-400 text-slate-950 textarea textarea-bordered" required maxLength={30}/>
                         </div>
                         <div className="form-control">
                             <label className="label">
@@ -247,13 +265,13 @@ export default function Pendaftaran() {
                             <label className="label">
                                 <span className="label-text">Nama Ayah Kandung</span>
                             </label>
-                            <input value={ayahkandung} onChange={(e) => setAyahkandung(e.target.value)} type="text" name="Ayah Kandung" placeholder="contoh : 'Agus Budiman' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required/>
+                            <input value={ayahkandung} onChange={(e) => setAyahkandung(e.target.value)} type="text" name="Ayah Kandung" placeholder="contoh : 'Agus Budiman' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50}/>
                         </div>
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text">Nomor Paspor</span>
                             </label>
-                            <input value={nopaspor} onChange={(e) => setNopaspor(e.target.value)} type="number" name="No Paspor" placeholder="123456789" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required/>
+                            <input value={nopaspor} onChange={(e) => setNopaspor(e.target.value)} type="number" name="No Paspor" placeholder="123456789" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={30}/>
                         </div>
                         <div className="form-control">
                             <label className="label">
@@ -265,7 +283,7 @@ export default function Pendaftaran() {
                             <label className="label">
                                 <span className="label-text">Tempat dikeluarkan paspor</span>
                             </label> 
-                            <input value={tempatpaspor} onChange={(e) => setTempatpaspor(e.target.value)} type="text" name="Tempat paspor" placeholder="Kota Pekanbaru" className="bg-secondary placeholder-slate-400 text-slate-950 textarea textarea-bordered" required/>
+                            <input value={tempatpaspor} onChange={(e) => setTempatpaspor(e.target.value)} type="text" name="Tempat paspor" placeholder="Kota Pekanbaru" className="bg-secondary placeholder-slate-400 text-slate-950 textarea textarea-bordered" required maxLength={50}/>
                         </div>
                         <div className="form-control">
                             <label className="label">
@@ -302,32 +320,32 @@ export default function Pendaftaran() {
                             <label className="label">
                                 <span className="label-text">Nama Ahli Waris</span>
                             </label>
-                            <input value={namawaris} onChange={(e) => setNamawaris(e.target.value)} type="text" name="Ahli Waris" placeholder="contoh : 'Dewi Septiana' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required/>
+                            <input value={namawaris} onChange={(e) => setNamawaris(e.target.value)} type="text" name="Ahli Waris" placeholder="contoh : 'Dewi Septiana' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50}/>
                         </div>
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text">Hubungan Ahli Waris</span>
                             </label>
-                            <input value={hubunganwaris} onChange={(e) => setHubunganwaris(e.target.value)} type="text" name="Hubungan Ahli Waris" placeholder="contoh : 'Anak' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required/>
+                            <input value={hubunganwaris} onChange={(e) => setHubunganwaris(e.target.value)} type="text" name="Hubungan Ahli Waris" placeholder="contoh : 'Anak' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50}/>
                         </div>
                         
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text">Alamat Tempat Tinggal</span>
                             </label>
-                            <input value={alamat} onChange={(e) => setAlamat(e.target.value)} type="text" name="Alamat Tempat Tinggal" placeholder="contoh : 'Jl. Kaharuddin Nst No.40, Simpang Tiga, Kec. Bukit Raya, Kota Pekanbaru, Riau' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required/>
+                            <input value={alamat} onChange={(e) => setAlamat(e.target.value)} type="text" name="Alamat Tempat Tinggal" placeholder="contoh : 'Jl. Kaharuddin Nst No.40, Simpang Tiga, Kec. Bukit Raya, Kota Pekanbaru, Riau' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={255}/>
                         </div>
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text">E-mail</span>
                             </label>
-                            <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" name="Email" placeholder="contoh : 'alharom@gmail.com' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required/>
+                            <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" name="Email" placeholder="contoh : 'alharom@gmail.com' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50}/>
                         </div>
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text">No. Telp/ No. HP/No. WhatsApp</span>
                             </label>
-                            <input value={notelponhp} onChange={(e) => setNotelponhp(e.target.value)} type="number" name="Nomor Telepon" placeholder="contoh : '0813-5632-4299' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required/>
+                            <input value={notelponhp} onChange={(e) => setNotelponhp(e.target.value)} type="number" name="Nomor Telepon" placeholder="contoh : '081356324299' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={15}/>
                         </div>
                         <div className="form-control w-full max-w-xs">
                             <label className="label">
@@ -351,29 +369,23 @@ export default function Pendaftaran() {
                                 <option>S1/S2/S3</option>
                             </select>
                         </div>
-                        <div className="form-control w-full max-w-xs">
+                        <div className="form-control">
                             <label className="label">
                                 <span className="label-text">Pekerjaan</span>
                             </label>
-                            <select value={pekerjaan} onChange={(e) => setPekerjaan(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
-                                <option>PNS</option>
-                                <option>TNI</option>
-                                <option>Swasta</option>
-                                <option>Pelajar</option>
-                                <option>Rumah Tangga</option>
-                            </select>
+                            <input value={pekerjaan} onChange={(e) => setPekerjaan(e.target.value)} type="text" name="Pekerjaan" placeholder="contoh : 'Tentara' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" maxLength={50}/>
                         </div>
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text">Penyakit yang di derita</span>
                             </label>
-                            <input value={penyakit} onChange={(e) => setPenyakit(e.target.value)} type="text" name="Penyakit yang diderita" placeholder="contoh : 'Kanker, Asma, dll.' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required/>
+                            <input value={penyakit} onChange={(e) => setPenyakit(e.target.value)} type="text" name="Penyakit yang diderita" placeholder="contoh : 'Kanker, Asma, dll.' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" maxLength={50}/>
                         </div>
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text">Keluarga yang dapat dihubungi ketika darurat</span>
                             </label>
-                            <input value={keluargadarurat} onChange={(e) => setKeluargadarurat(e.target.value)} type="text" name="Keluarga Darurat" placeholder="contoh : 'Dewi : 0813-5632-4299' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required/>
+                            <input value={keluargadarurat} onChange={(e) => setKeluargadarurat(e.target.value)} type="text" name="Keluarga Darurat" placeholder="contoh : 'Dewi : 0813-5632-4299' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50}/>
                         </div>
 
                         <div className="form-control mt-6">
