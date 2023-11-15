@@ -21,6 +21,7 @@ export default function Admin() {
     const [umrahtable, setUmrahTable] = useState(false)
 
     const [users, setUsers] = useState([])
+    const [searchQuery, setSearchQuery] = useState('');
 
     const roles = session?.user.role;
 
@@ -50,21 +51,27 @@ export default function Admin() {
 
     const fetchUsers = async () => {
         try {
-            const response = await fetch('/api/userlist')
-            const data = await response.json()
-            const users = data.responsedata
-            const array = JSON.parse(users)
-            setUsers(array)
+            const response = await fetch(`/api/userlist?search=${searchQuery}`);
+            const data = await response.json();
+            const users = data.responsedata;
+            const array = JSON.parse(users);
+            const sortedUsers = array.sort((a, b) => new Date(b.data_dibuat) - new Date(a.data_dibuat));
+    
+            const filteredUsers = sortedUsers.filter((user) => {
+                return user.nama_lengkap.toLowerCase().includes(searchQuery.toLowerCase());
+            });
+    
+            setUsers(filteredUsers);
         } catch (error) {
-            console.error("Error fetching user", error)
+            console.error("Error fetching user", error);
         }
-    }
+    };
 
     useEffect(() => {
         fetchUserCount()
         fetchCurrentMonthUserCount()
         fetchUsers()
-    }, [])
+    }, [searchQuery])
 
 
     if (status === 'loading') {
@@ -131,6 +138,12 @@ export default function Admin() {
                         </div>
                         <div className="grid min-h-screen z-40 bg-red-950">
                                 <div className="overflow-x-auto m-4">
+                                    <div className="form-control max-w-xs m-2">
+                                        <label className="label">
+                                            <span className="label-text">Pencarian</span>
+                                        </label>
+                                        <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} type="text" name="search" placeholder="" className="bg-secondary placeholder-slate-400 text-slate-950 textarea textarea-bordered" required maxLength={30} />
+                                    </div>
                                     <table className="table text-white">
                                         {/* head */}
                                         <thead>
