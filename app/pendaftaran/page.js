@@ -71,15 +71,15 @@ export default function Pendaftaran() {
     }, [session])
 
     if (paketumrah == 'Umrah Reguler (Silver)') {
-        setPrice(33500000)
+        () => setPrice(33500000)
     } else if (paketumrah == 'Umrah Reguler (Gold)') {
-        setPrice(35300000)
+        () => setPrice(35300000)
     } else if (paketumrah == 'Umrah VIP') {
-        setPrice(37550000)
+        () => setPrice(37550000)
     } else if (paketumrah == 'Umrah Plus Turki') {
-        setPrice(39197000)
+        () => setPrice(39197000)
     } else if (paketumrah == 'Umrah Plus Dubai') {
-        setPrice(35350000)
+        () => setPrice(35350000)
     }
 
     const random = Math.floor(Math.random() * 100000)
