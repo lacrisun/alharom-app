@@ -61,6 +61,8 @@ export default function Pendaftaran() {
     const [nonuser, setNonuser] = useState(false)
     const [price, setPrice] = useState(0)
 
+    const [payment, setPayment] = useState("Angsuran")
+
     useEffect(() => {
         if (session?.user.role === 'Mentor' || session?.user.role === 'Admin') {
             setDidaftarkans(session.user.fullname)
@@ -69,15 +71,15 @@ export default function Pendaftaran() {
     }, [session])
 
     if (paketumrah == 'Umrah Reguler (Silver)') {
-        price = 33500000
+        setPrice(33500000)
     } else if (paketumrah == 'Umrah Reguler (Gold)') {
-        price = 35300000
+        setPrice(35300000)
     } else if (paketumrah == 'Umrah VIP') {
-        price = 37550000
+        setPrice(37550000)
     } else if (paketumrah == 'Umrah Plus Turki') {
-        price = 39197000
+        setPrice(39197000)
     } else if (paketumrah == 'Umrah Plus Dubai') {
-        price = 35350000
+        setPrice(35350000)
     }
 
     const random = Math.floor(Math.random() * 100000)
@@ -142,6 +144,7 @@ export default function Pendaftaran() {
                 didaftarkans,
                 price,
                 nonuser,
+                payment,
             };
 
             const validationResult = schema.safeParse(userbody);
@@ -153,7 +156,15 @@ export default function Pendaftaran() {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(userbody),
-                });
+                }).then((response) => {
+                    if (!response.ok) {
+                        setSubmitfail(true)
+                        setSubmitted(false)
+                    } else {
+                        setSubmitted(true)
+                        setSubmitfail(false)
+                    } 
+                })
 
                 setSubmitting(false);
             } else {
@@ -198,9 +209,10 @@ export default function Pendaftaran() {
         } catch (error) {
             console.log(error)
         }
-
-        await new Promise(resolve => setTimeout(resolve, 2000))
-        router.push(linkinvoice)
+        if (payment === 'Cash (Bayar full)') {
+            await new Promise(resolve => setTimeout(resolve, 2000))
+            router.push(linkinvoice)
+        }
     }
 
     if (status === 'loading') {
@@ -397,12 +409,20 @@ export default function Pendaftaran() {
                             </label>
                             <input value={keluargadarurat} onChange={(e) => setKeluargadarurat(e.target.value)} type="text" name="Keluarga Darurat" placeholder="contoh : 'Dewi : 0813-5632-4299' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50}/>
                         </div>
-
+                        <div className="form-control w-full max-w-xs">
+                            <label className="label">
+                                <span className="label-text">Bayar via :</span>
+                            </label>
+                            <select value={payment} onChange={(e) => setPayment(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
+                                <option>Angsuran (DP)</option>
+                                <option>Cash (Bayar full)</option>
+                            </select>
+                        </div>
                         <div className="form-control mt-6">
                             { submitting ? ( <><input type="submit" value='Mengirim...' className="btn btn-secondary"></input></> ) : (<><input type="submit" value='Kirim' className="btn btn-secondary"></input></>) }
                             { submitted && (<div className="alert alert-success mt-2">
                             <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            <span>Data anda telah berhasil di kirim! Anda akan masuk halaman pembayaran sebentar lagi.</span></div>) }
+                            <span>Data anda telah berhasil di kirim! Anda akan kami segera kami hubungi.</span></div>) }
                             { submitfail && (<div className="alert alert-error mt-2">
                             <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Error! Mohon coba lagi dalam beberapa saat, atau hubungi kami.</span></div>) }
                         </div>

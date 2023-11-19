@@ -35,6 +35,7 @@ export async function POST(req) {
                 paystatus: userData.statusbyr,
                 didaftarkan: userData.didaftarkans,
                 sisa_bayar: userData.price,
+                pembayaran: userData.payment
             }
         })
         if (!userData.nonuser) {
