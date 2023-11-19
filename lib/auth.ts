@@ -25,22 +25,37 @@ export const authOptions: NextAuthOptions = {
                     return null
                 }
             
-                const existingUser = await prisma.accounts.findUnique({
+                const existingUserModel1 = await prisma.accounts.findUnique({
                     where: {
                         email: credentials.email
                     }
-                })
-                if (!existingUser) {
-                    console.log("There's no user with that email")
+                });
+            
+                const existingUserModel2 = await prisma.employee.findUnique({
+                    where: {
+                        email: credentials.email
+                    }
+                });
+            
+                if (!existingUserModel1 && !existingUserModel2) {
+                    console.log("There's no user with that email");
+                    return null;
                 }
 
-                const passwordMatch = await compare(credentials.password, existingUser.password)
+                let existingUser;
+                if (existingUserModel1) {
+                    existingUser = existingUserModel1;
+                } else {
+                    existingUser = existingUserModel2;
+                }
+
+                const passwordMatch = await compare(credentials.password, existingUser.password);
 
                 if (!passwordMatch) {
-                    console.log("Password is invalid")
-                    return null
-
+                    console.log("Password is invalid");
+                    return null;
                 }
+
 
                 return {
                     id: `${existingUser.id}`,

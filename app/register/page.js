@@ -131,6 +131,7 @@ export default function Login() {
                 <div className="card flex-shrink-0 w-full shadow-2xl bg-primary">
                     <form onSubmit={handleSubmit} className="card-body">
                         <h1 className="text-3xl text-bold text-white">Register Akun</h1>
+                        <h1 className="text-xl text-normal text-white">Untuk mendaftar di Alharom, diwajibkan memiliki sebuah akun.</h1>
                         <h1 className="text-xl text-normal text-white">Jika sudah memiliki akun, <Link href="/login" className="hover:text-red-700">klik disini</Link></h1>
                         <div className="form-control">
                             <label className="label">

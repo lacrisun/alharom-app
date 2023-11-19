@@ -14,6 +14,7 @@ import { useSession } from "next-auth/react";
 import NavbarLoggedIn from "@/components/loggedin/navbar";
 import LoadingPage from "@/components/loading";
 import { z } from "zod";
+import prisma from "@/lib/prisma";
 
 export default function Pendaftaran() {
     const router = useRouter()
@@ -57,14 +58,16 @@ export default function Pendaftaran() {
     const [submitfail, setSubmitfail] = useState(false)
     const [statusbyr, setStatusbyr] = useState("BELUM_LUNAS")
     const [didaftarkans, setDidaftarkans] = useState("User/Sendiri")
+    const [nonuser, setNonuser] = useState(false)
+    const [price, setPrice] = useState(0)
 
     useEffect(() => {
         if (session?.user.role === 'Mentor' || session?.user.role === 'Admin') {
             setDidaftarkans(session.user.fullname)
+            setNonuser(true)
         }
     }, [session])
 
-    let price = 0
     if (paketumrah == 'Umrah Reguler (Silver)') {
         price = 33500000
     } else if (paketumrah == 'Umrah Reguler (Gold)') {
@@ -107,7 +110,7 @@ export default function Pendaftaran() {
         let statusinv
         let linkinvoice
 
-
+        
         try {
             const userbody = {
                 randomID,
@@ -137,6 +140,8 @@ export default function Pendaftaran() {
                 keluargadarurat,
                 statusbyr,
                 didaftarkans,
+                price,
+                nonuser,
             };
 
             const validationResult = schema.safeParse(userbody);
@@ -201,6 +206,11 @@ export default function Pendaftaran() {
     if (status === 'loading') {
         return (
             <LoadingPage/>
+        )
+    }
+    if (session?.user) {
+        return (
+            redirect('/register')
         )
     }
     return (

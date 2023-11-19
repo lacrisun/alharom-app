@@ -33,9 +33,20 @@ export async function POST(req) {
                 penyakit: userData.penyakit,
                 keluarga_darurat: userData.keluargadarurat,
                 paystatus: userData.statusbyr,
-                didaftarkan: userData.didaftarkans
+                didaftarkan: userData.didaftarkans,
+                sisa_bayar: userData.price,
             }
         })
+        if (!userData.nonuser) {
+            await prisma.accounts.update({
+                where: {
+                    email: userData.email
+                },
+                data: {
+                    sisa_pembayaran: userData.price
+                }
+            })
+        }
         return NextResponse.json({result}, {status: 200})
     } catch (error) {
         console.error(error)

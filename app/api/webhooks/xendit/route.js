@@ -24,10 +24,31 @@ export async function POST(request) {
     const lunas = "LUNAS"
 
     try {
+        const user = await prisma.user.findUnique({
+          where: {
+            id: _externalId
+          },
+          select: {
+            email: true
+          }
+        })
         const result = await prisma.user.update({
             where: { id: _externalId },
-            data: {paystatus: lunas},
+            data: {
+              paystatus: lunas,
+              sisa_bayar: 0,
+            },
         })
+        if (user.email) {
+          await prisma.accounts.update({
+            where: {
+              email: user.email
+            },
+            data: {
+              sisa_pembayaran: userData.price
+            }
+          }) 
+        }
         return NextResponse.json({result}, {status: 200})
     } catch (error) {
         console.log(error)
