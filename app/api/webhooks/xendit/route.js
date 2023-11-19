@@ -45,7 +45,7 @@ export async function POST(request) {
               email: user.email
             },
             data: {
-              sisa_pembayaran: userData.price
+              sisa_pembayaran: '0'
             }
           }) 
         }

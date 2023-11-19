@@ -70,17 +70,22 @@ export default function Pendaftaran() {
         }
     }, [session])
 
-    if (paketumrah == 'Umrah Reguler (Silver)') {
-        () => setPrice('33500000')
-    } else if (paketumrah == 'Umrah Reguler (Gold)') {
-        () => setPrice('35300000')
-    } else if (paketumrah == 'Umrah VIP') {
-        () => setPrice('37550000')
-    } else if (paketumrah == 'Umrah Plus Turki') {
-        () => setPrice('39197000')
-    } else if (paketumrah == 'Umrah Plus Dubai') {
-        () => setPrice('35350000')
-    }
+    useEffect(() => {
+        let newPrice = '33500000';
+        if (paketumrah === 'Umrah Reguler (Silver)') {
+            newPrice = '33500000';
+        } else if (paketumrah === 'Umrah Reguler (Gold)') {
+            newPrice = '35300000';
+        } else if (paketumrah === 'Umrah VIP') {
+            newPrice = '37550000';
+        } else if (paketumrah === 'Umrah Plus Turki') {
+            newPrice = '39197000';
+        } else if (paketumrah === 'Umrah Plus Dubai') {
+            newPrice = '35350000';
+        }
+
+        setPrice(newPrice);
+    }, [paketumrah]);
 
     const random = Math.floor(Math.random() * 100000)
     const randomStr = random.toString()
@@ -156,6 +161,14 @@ export default function Pendaftaran() {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(userbody),
+                }).then((response) => {
+                    if (!response.ok) {
+                        setSubmitfail(true)
+                        setSubmitted(false)
+                    } else {
+                        setSubmitted(true)
+                        setSubmitfail(false)
+                    } 
                 })
 
                 setSubmitting(false);
