@@ -156,14 +156,6 @@ export default function Pendaftaran() {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify(userbody),
-                }).then((response) => {
-                    if (!response.ok) {
-                        setSubmitfail(true)
-                        setSubmitted(false)
-                    } else {
-                        setSubmitted(true)
-                        setSubmitfail(false)
-                    } 
                 })
 
                 setSubmitting(false);
