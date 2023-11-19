@@ -6,7 +6,7 @@ import Navbar from "@/components/navbar";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import Footer from "@/components/footer";
 import { resolve } from "styled-jsx/css";
 import { Invoice as InvoiceClient, Xendit } from "xendit-node";
@@ -212,9 +212,9 @@ export default function Pendaftaran() {
             <LoadingPage/>
         )
     }
-    if (session?.user) {
+    if (!session?.user) {
         return (
-            redirect('/register')
+            redirect('/login')
         )
     }
     return (
