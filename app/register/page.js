@@ -173,7 +173,7 @@ export default function Login() {
                             <label className="label">
                                 <span className="label-text">Foto Profil</span>
                             </label>
-                            <input type="file" name="avatar" onChange={(e) => setAvatar(e.target.files[0])} className="bg-secondary text-slate-950 input input-bordered" accept="image/*" />
+                            <input type="file" name="avatar" onChange={(e) => setAvatar(e.target.files[0])} className="bg-secondary text-slate-950  file-input file-input-secondary file-input-bordered w-full max-w-ws" accept="image/*" />
                         </div>
                         { submitfail ? (<div className="alert alert-error mt-2">
                             <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Ada kesalahan dalam membuat akun, mohon periksa kembali data anda.</span></div>) : null }
