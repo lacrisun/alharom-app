@@ -36,7 +36,7 @@ export async function POST(request) {
             where: { id: _externalId },
             data: {
               paystatus: lunas,
-              sisa_bayar: 0,
+              sisa_bayar: '0',
             },
         })
         if (user.email) {
