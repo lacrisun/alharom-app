@@ -22,6 +22,8 @@ export default function Admin() {
 
     const [users, setUsers] = useState([])
     const [searchQuery, setSearchQuery] = useState('');
+    const [currentDay, setCurrentDay] = useState('');
+    const [refreshing, setRefreshing] = useState(false);
 
     const roles = session?.user.role;
 
@@ -62,10 +64,33 @@ export default function Admin() {
             });
     
             setUsers(filteredUsers);
+
+            if (filteredUsers.length > 0) {
+                const firstUserDate = new Date(filteredUsers[0].data_dibuat);
+                const formattedDate = firstUserDate.toLocaleString('default', { day: 'numeric', month: 'long', year: 'numeric' });
+                setCurrentDay(formattedDate);
+            } else {
+                setCurrentDay('');
+            }
+
         } catch (error) {
             console.error("Error fetching user", error);
         }
     };
+
+    const handleRefresh = async () => {
+        setRefreshing(true);
+      
+        try {
+          await fetchUserCount();
+          await fetchCurrentMonthUserCount();
+          await fetchUsers();
+        } catch (error) {
+          console.error("Error refreshing data:", error);
+        }
+      
+        setRefreshing(false);
+      };
 
     useEffect(() => {
         fetchUserCount()
@@ -137,31 +162,99 @@ export default function Admin() {
                             <div className="flex-1 px-2 mx-2 text-black">Admin Page</div>
                         </div>
                         <div className="grid min-h-screen z-40 bg-red-950">
-                                <div className="overflow-x-auto m-4">
-                                    <div className="form-control max-w-xs m-2">
-                                        <label className="label">
-                                            <span className="label-text">Pencarian</span>
+                                <div className="overflow-x-auto m-4 text-black">
+                                    <div className="form-control max-w-xs m-2 flex flex-row">
+                                        <label className="label mr-3">
+                                            <span className="label-text text-white">Pencarian</span>
                                         </label>
                                         <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} type="text" name="search" placeholder="" className="bg-secondary placeholder-slate-400 text-slate-950 textarea textarea-bordered" required maxLength={30} />
+                                        <button
+                                            className="btn btn-primary ml-3"
+                                            onClick={handleRefresh}
+                                            disabled={refreshing}
+                                        >
+                                            Refresh Data
+                                        </button>
                                     </div>
-                                    <table className="table text-white">
+                                    <table className="table text-slate-900 bg-secondary rounded-lg">
                                         {/* head */}
-                                        <thead>
+                                        <thead className="text-slate-900">
                                             <tr>
                                                 <th>ID</th>
                                                 <th>Nama</th>
+                                                <th>Nomor NIK</th>
+                                                <th>Paket Umrah</th>
+                                                <th>Tipe kamar</th>
+                                                <th>Status Pembayaran</th>
                                                 <th>Email</th>
+                                                <th>Alamat</th>
+                                                <th>Jenis Kelamin</th>
+                                                <th>Tempat Lahir</th>
+                                                <th>Tanggal Lahir</th>
+                                                <th>Nomor Telepon</th>
+                                                <th>Nomor Paspor</th>
+                                                <th>Paspor Dibuat</th>
+                                                <th>Masa Berlaku paspor</th>
+                                                <th>Tempat dikeluarkan paspor</th>
+                                                <th>Golongan Darah</th>
+                                                <th>Nama Ayah Kandung</th>
+                                                <th>Pekerjaan</th>
+                                                <th>Pendidikan Terakhir</th>
+                                                <th>Status Perkawinan</th>
+                                                <th>Penyakit yang di idapi</th>
+                                                <th>Nama Waris</th>
+                                                <th>Hubungan dengan Waris</th>
+                                                <th>Keluarga yang bisa dihubungi</th>
+                                                <th>Didaftarkan oleh</th>
+                                                <th>Pembayaran via</th>
+                                                <th>Sisa pembayaran</th>
                                                 <th>Data Dibuat</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {users && users.map((user) => (
-                                                <tr key={user.id}>
-                                                    <td>{user.id}</td>
-                                                    <td>{user.nama_lengkap}</td>
-                                                    <td>{user.email}</td>
-                                                    <td>{user.data_dibuat}</td>
-                                                </tr>
+                                            {users && users.map((user, index) => (
+                                                <>
+                                                    {index === 0 || new Date(user.data_dibuat).toLocaleDateString() !== new Date(users[index - 1].data_dibuat).toLocaleDateString() ? (
+                                                        <tr key={`divider-${user.id}`} className="justify-items-center">
+                                                            <td colSpan="4" className="divider">
+                                                            {new Date(user.data_dibuat).toLocaleDateString('in-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                                                            </td>
+                                                        </tr>
+                                                    ) : null}
+                                                    <tr key={user.id}>
+                                                        <td>{user.id}</td>
+                                                        <td>{user.nama_lengkap}</td>
+                                                        <td>{user.nik}</td>
+                                                        <td>{user.paket_umrah}</td>
+                                                        <td>{user.tipe_kamar}</td>
+                                                        <td>
+                                                            <div className={user.paystatus === 'LUNAS' ? 'badge badge-success' : 'badge badge-error'}>{user.paystatus}</div>
+                                                        </td>
+                                                        <td>{user.email}</td>
+                                                        <td>{user.alamat}</td>
+                                                        <td>{user.jenis_kelamin}</td>
+                                                        <td>{user.tempat_lahir}</td>
+                                                        <td>{user.tanggal_lahir}</td>
+                                                        <td>{user.nomor_telpon}</td>
+                                                        <td>{user.nomor_paspor}</td>
+                                                        <td>{user.paspor_dibuat}</td>
+                                                        <td>{user.paspor_expired}</td>
+                                                        <td>{user.tempat_paspor}</td>
+                                                        <td>{user.golongan_darah}</td>
+                                                        <td>{user.ayah_kandung}</td>
+                                                        <td>{user.pekerjaan}</td>
+                                                        <td>{user.pendidikan}</td>
+                                                        <td>{user.status_kawin}</td>
+                                                        <td>{user.penyakit}</td>
+                                                        <td>{user.nama_waris}</td>
+                                                        <td>{user.hubungan_waris}</td>
+                                                        <td>{user.keluarga_darurat}</td>
+                                                        <td>{user.didaftarkan}</td>
+                                                        <td>{user.pembayaran}</td>
+                                                        <td>RP. {user.sisa_bayar}</td>
+                                                        <td>{new Date(user.data_dibuat).toLocaleString()}</td>
+                                                    </tr>
+                                                </>
                                             ))}
                                         </tbody>
                                     </table>
