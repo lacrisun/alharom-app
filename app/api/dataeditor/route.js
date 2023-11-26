@@ -35,7 +35,8 @@ export async function POST(req) {
                 penyakit: userData.penyakit,
                 keluarga_darurat: userData.keluargadarurat,
                 paystatus: userData.statusbyr,
-                sisa_bayar: userData.price,
+                sisa_bayar: userData.sisaPembayaran,
+                paystatus: userData.statusbyr,
             }
         })
         return NextResponse.json({result}, {status: 200})

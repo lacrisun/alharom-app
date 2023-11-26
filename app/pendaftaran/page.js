@@ -182,7 +182,6 @@ export default function Pendaftaran() {
             setSubmitfail(true);
             setSubmitted(false);
         }
-        setSubmitted(true);
 
         try {
             const data = {
