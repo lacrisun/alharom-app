@@ -10,14 +10,19 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Bar as ReactBar } from "react-chartjs-2";
+import { CategoryScale, Chart, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { z } from "zod";
 
 export default function Admin() {
     const router = useRouter();
     const { data: session, status } = useSession();
 
+    Chart.register(CategoryScale, LinearScale, BarElement, Tooltip)
+
     const [userCount, setUserCount] = useState(0)
     const [userpermonth, setUserpermonth] = useState(0)
+    const [accountCount, setAccountCount] = useState(0)
     const [dashboard, setDashboard] = useState(true)
     const [umrahtable, setUmrahTable] = useState(false)
 
@@ -88,6 +93,41 @@ export default function Admin() {
         keluargadarurat: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
     })
 
+    const labels = ['Jan', 'Feb', 'Mar', 'Apr']
+
+    const data = {
+        labels: labels,
+        datasets: [{
+            label: 'My First Dataset',
+            data: [65, 59, 80, 81],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(255, 205, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+            ],
+            borderColor: [
+                'rgb(255, 99, 132)',
+                'rgb(255, 159, 64)',
+                'rgb(255, 205, 86)',
+                'rgb(75, 192, 192)',
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    const options = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top'
+            },
+            title: {
+                display: true,
+                text: 'lmao banget'
+            }
+        }
+    }
 
     const fetchUserCount = async () => {
         try {
@@ -95,6 +135,19 @@ export default function Admin() {
             const response = await fetch('/api/usercount');
             const data = await response.json();
             setUserCount(data.responsedata)
+        } catch (error) {
+            console.error("Error fetching user count:", error);
+        } finally {
+            setFetchingData(false)
+        }
+    };
+
+    const fetchAccountCount = async () => {
+        try {
+            setFetchingData(true)
+            const response = await fetch('/api/accountcount');
+            const data = await response.json();
+            setAccountCount(data.responsedata)
         } catch (error) {
             console.error("Error fetching user count:", error);
         } finally {
@@ -149,6 +202,7 @@ export default function Admin() {
             await fetchUserCount();
             await fetchCurrentMonthUserCount();
             await fetchUsers();
+            await fetchAccountCount()
         } catch (error) {
             console.error("Error refreshing data:", error);
         }
@@ -360,6 +414,12 @@ export default function Admin() {
         setSisaPembayaran(newPrice);
     }, [paketumrah]);
 
+    useEffect(() => {
+        if (sisaPembayaran === '0') {
+            setStatusbyr('LUNAS')
+        }
+    }, [sisaPembayaran])
+
     const random = Math.floor(Math.random() * 100000)
     const randomStr = random.toString()
 
@@ -439,6 +499,10 @@ export default function Admin() {
     useEffect(() => {
         fetchUserCount()
         fetchCurrentMonthUserCount()
+        fetchAccountCount()
+    }, [])
+
+    useEffect(() => {
         fetchUsers()
     }, [searchQuery])
 
@@ -469,8 +533,21 @@ export default function Admin() {
                                 </div>
                                 <div className="flex-1 px-2 mx-2 text-black">Admin Page</div>
                             </div>
-                            <div className="grid min-h-screen z-40 bg-red-950">
-                                <div className="stats h-min w-min m-4 shadow stats-vertical lg:stats-horizontal">
+                            <div className="grid grid-cols-1 z-40 bg-red-950">
+                                <div className="form-control ml-2 mb-2 mt-2 flex flex-row h-min justify-between">
+                                        <div>
+                                            <button
+                                                className="btn btn-primary rounded-2xl"
+                                                onClick={handleRefresh}
+                                                disabled={refreshing}
+                                            >
+                                                Refresh Data
+                                            </button>
+                                        </div>
+                                    </div>
+                            </div>
+                            <div className="grid grid-cols-2 min-h-screen z-40 bg-red-950 justify-items-stretch gap-2">
+                                <div className="stats h-min ml-2 shadow stats-vertical">
                                     <div className="stat bg-primary">
                                         <div className="stat-title">Total Jamaah</div>
                                         {fetchingData ? (
@@ -498,6 +575,34 @@ export default function Admin() {
                                         <div className="stat-desc">Sesuai hari ini, {today}</div>
                                     </div>
                                 </div>
+                                <div className="stats h-min mr-2 shadow stats-vertical">
+                                    <div className="stat bg-primary">
+                                        <div className="stat-title">Total Akun</div>
+                                        {fetchingData ? (
+                                            <div className="stat-value">
+                                                <span className="loading loading-spinner loading-md"></span>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <div className="stat-value">{accountCount}</div>
+                                            </>
+                                        )}
+                                        <div className="stat-desc">Jumlah akun yang terdata dalam database</div>
+                                    </div>
+                                    <div className="stat bg-primary">
+                                    <div className="stat-title">Total Akun</div>
+                                        {fetchingData ? (
+                                            <div className="stat-value">
+                                                <span className="loading loading-spinner loading-md"></span>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <div className="stat-value">{accountCount}</div>
+                                            </>
+                                        )}
+                                        <div className="stat-desc">Jumlah akun yang terdata dalam database</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -521,7 +626,7 @@ export default function Admin() {
                                 </div>
                                 <div className="flex-1 px-2 mx-2 text-black">Admin Page</div>
                             </div>
-                            <div className="grid h-screen z-40 bg-red-950 grid-cols-1">
+                            <div className="grid min-h-screen z-40 bg-red-950 grid-cols-1">
                                 <div>
                                     <div className="form-control m-2 flex flex-row h-min justify-between">
                                         <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} type="text" name="search" placeholder="Pencarian" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered w-full max-w-xs" required />
