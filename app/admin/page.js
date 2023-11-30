@@ -4,7 +4,7 @@ import AdminNav from "@/components/admincomponents/adminnavbar";
 import Dashboard from "@/components/admincomponents/dashboard";
 import LoadingPage from "@/components/loading";
 import prisma from "@/lib/prisma";
-import { faAddressCard, faBed, faBook, faCalendar, faChartLine, faEnvelope, faFileInvoice, faFileInvoiceDollar, faHandHoldingDollar, faHeartPulse, faHome, faIdCard, faLocationDot, faMapLocationDot, faMoneyBill, faNotesMedical, faPassport, faPen, faPersonCircleCheck, faPhone, faPhoneVolume, faPlaneDeparture, faRightFromBracket, faTrash, faUser, faUserDoctor, faUserGroup, faUsers, faVenusMars, faWarning } from "@fortawesome/free-solid-svg-icons";
+import { faAddressCard, faBed, faBook, faCalendar, faChartLine, faCheckCircle, faEnvelope, faFileInvoice, faFileInvoiceDollar, faHandHoldingDollar, faHeartPulse, faHome, faIdCard, faLocationDot, faMapLocationDot, faMoneyBill, faNotesMedical, faPassport, faPen, faPersonCircleCheck, faPhone, faPhoneVolume, faPlaneDeparture, faRightFromBracket, faTrash, faUser, faUserDoctor, faUserGroup, faUsers, faVenusMars, faWarning } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
@@ -13,19 +13,26 @@ import { useEffect, useState } from "react";
 import { Bar as ReactBar } from "react-chartjs-2";
 import { CategoryScale, Chart, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { z } from "zod";
+import { createClient } from "@supabase/supabase-js";
 
 export default function Admin() {
     const router = useRouter();
     const { data: session, status } = useSession();
+
+    const supabase = createClient('https://ioijksivulsyacpizroe.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlvaWprc2l2dWxzeWFjcGl6cm9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTU3MzIxOTEsImV4cCI6MjAxMTMwODE5MX0.0KvEsY8u2iqEU39dtkoEmD_4XiY8atR7ELC-CH5NIZw')
+
 
     Chart.register(CategoryScale, LinearScale, BarElement, Tooltip)
 
     const [userCount, setUserCount] = useState(0)
     const [userpermonth, setUserpermonth] = useState(0)
     const [accountCount, setAccountCount] = useState(0)
+    const [verifiedAmt, setVerifiedAmt] = useState(0)
     const [dashboard, setDashboard] = useState(true)
     const [umrahtable, setUmrahTable] = useState(false)
+    const [accounttable, setAccounttable] = useState(false)
 
+    const [accounts, setAccounts] = useState([])
     const [users, setUsers] = useState([])
     const [searchQuery, setSearchQuery] = useState('');
     const [currentDay, setCurrentDay] = useState('');
@@ -70,6 +77,17 @@ export default function Admin() {
 
     const [payment, setPayment] = useState("Angsuran")
 
+    const [accuserid, setAccuserid] = useState("")
+    const [accnamalengkap, setAccNamalengkap] = useState("")
+    const [accemail, setAccEmail] = useState("")
+    const [accnomortelepon, setAccNomortelepon] = useState("")
+    const [acctgllahir, setAccTgllahir] = useState("")
+    const [accusername, setAccUsername] = useState(accnamalengkap.toLowerCase())
+    const [accpassword, setAccPassword] = useState("")
+    const [accsisapembayaran, setAccSisapembayaran] = useState("0")
+    const [accavatar, setAccAvatar] = useState(null)
+    const [accverified, setAccverified] = useState("Belum terverifikasi")
+
     const roles = session?.user.role;
 
     const date = new Date()
@@ -91,6 +109,15 @@ export default function Admin() {
         pekerjaan: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
         penyakit: z.string().max(50, "Tidak boleh melebihi batas huruf"),
         keluargadarurat: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+    })
+
+    const accschema = z.object({
+        accnamalengkap: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        accemail: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        accnomortelepon: z.string().max(16, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        acctgllahir: z.string().max(20, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        accusername: z.string().max(20, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        // accpassword: z.string().max(255, "Tidak boleh melebihi batas huruf").min(8, "Wajib di isi"),
     })
 
     const labels = ['Jan', 'Feb', 'Mar', 'Apr']
@@ -148,6 +175,7 @@ export default function Admin() {
             const response = await fetch('/api/accountcount');
             const data = await response.json();
             setAccountCount(data.responsedata)
+            setVerifiedAmt(data.isVerifiedData)
         } catch (error) {
             console.error("Error fetching user count:", error);
         } finally {
@@ -172,15 +200,23 @@ export default function Admin() {
         try {
             const response = await fetch(`/api/userlist?search=${searchQuery}`);
             const data = await response.json();
-            const users = data.responsedata;
-            const array = JSON.parse(users);
-            const sortedUsers = array.sort((a, b) => new Date(b.data_dibuat) - new Date(a.data_dibuat));
+            const users = data.responseUserData;
+            const accounts = data.responseAccountData
+            const accArray = JSON.parse(accounts)
+            const userArray = JSON.parse(users);
 
+            const sortedUsers = userArray.sort((a, b) => new Date(b.data_dibuat) - new Date(a.data_dibuat));
             const filteredUsers = sortedUsers.filter((user) => {
                 return user.nama_lengkap.toLowerCase().includes(searchQuery.toLowerCase());
             });
 
+            const sortedAccounts = accArray.sort((a, b) => new Date(b.tanggal_bergabung) - new Date(a.tanggal_bergabung));
+            const filteredAccounts = sortedAccounts.filter((account) => {
+                return account.nama_lengkap.toLowerCase().includes(searchQuery.toLowerCase());
+            });
+
             setUsers(filteredUsers);
+            setAccounts(filteredAccounts)
 
             if (filteredUsers.length > 0) {
                 const firstUserDate = new Date(filteredUsers[0].data_dibuat);
@@ -218,6 +254,25 @@ export default function Admin() {
 
         setUserID(user.id)       
 
+        modal.addEventListener('close', () => {
+            setSubmitted(false)
+            setSubmitfail(false)
+        })
+        
+    }
+
+    const delAccModalopener = (accID) => {
+        const modal = document.getElementById('acc_del_modal')
+        modal.showModal()
+
+        const acc = accounts.find((account) => account.id === accID);
+
+        setAccuserid(acc.id)       
+
+        modal.addEventListener('close', () => {
+            setSubmitted(false)
+            setSubmitfail(false)
+        })
         
     }
 
@@ -227,6 +282,7 @@ export default function Admin() {
         try {
             const userbody = {
                 userID,
+                accuserid
             }
             await fetch("/api/deleterec", {
                 method: "POST",
@@ -252,6 +308,52 @@ export default function Admin() {
         }
     }
 
+    const createAccountModalOpener = () => {
+        const modal = document.getElementById('acc_create_modal')
+        modal.showModal()
+
+        modal.addEventListener('close', () => {
+            setAccuserid("");
+            setAccNamalengkap("");
+            setAccEmail("");
+            setAccNomortelepon("");
+            setAccTgllahir("");
+            setAccUsername("");
+            setAccSisapembayaran("");
+            setAccAvatar(null)
+            setSubmitted(false);
+            setSubmitfail(false);
+        })
+    }
+
+    const editAccountModalOpener = async (accID) => {
+        const modal = document.getElementById('acc_edit_modal')
+        modal.showModal()
+
+        const acc = accounts.find((account) => account.id === accID);
+
+        setAccuserid(acc.id)
+        
+        setAccNamalengkap(acc.nama_lengkap)
+        setAccEmail(acc.email)
+        setAccNomortelepon(acc.nomor_telepon)
+        setAccTgllahir(acc.tanggal_lahir)
+        setAccUsername(acc.username)
+        setAccSisapembayaran(acc.sisa_pembayaran)
+
+        modal.addEventListener('close', () => {
+            setAccuserid("");
+            setAccNamalengkap("");
+            setAccEmail("");
+            setAccNomortelepon("");
+            setAccTgllahir("");
+            setAccUsername("");
+            setAccSisapembayaran("");
+            setSubmitted(false);
+            setSubmitfail(false);
+        });
+
+    }
 
     const editModalopener = async (userId) => {
         const modal = document.getElementById('edit_modal')
@@ -288,19 +390,71 @@ export default function Admin() {
         setSisaPembayaran(user.sisa_bayar)
 
         modal.addEventListener('close', () => {
-            setSubmitted(false)
-            setSubmitfail(false)
-        })
+            setSubmitted(false);
+            setSubmitfail(false);
+            setUserID("");
+            setPaketumrah("Umrah Reguler (Silver)");
+            setTipekamar("Quad");
+            setNamalengkap("");
+            setNonik("");
+            setTempatlahir("");
+            setTanggallahir("");
+            setAyahkandung("");
+            setNopaspor("");
+            setExpirepaspor("");
+            setTempatpaspor("");
+            setPasporissued("");
+            setJeniskelamin("Laki-laki");
+            setGolongandarah("");
+            setStatuskawin("Menikah");
+            setNamawaris("");
+            setHubunganwaris("");
+            setEmail("");
+            setNotelponhp("");
+            setPengalaman("Ke-1");
+            setPendidikanterakhir("SD");
+            setPekerjaan("");
+            setPenyakit("");
+            setKeluargadarurat("");
+            setAlamat("");
+            setSisaPembayaran("");
+        });
 
     }
 
-    const createModalOpener = async () => {
+    const createModalOpener = () => {
         const modal = document.getElementById('create_modal')
         modal.showModal()
 
         modal.addEventListener('close', () => {
-            setSubmitted(false)
-            setSubmitfail(false)
+            setSubmitted(false);
+            setSubmitfail(false);
+            setUserID("");
+            setPaketumrah("Umrah Reguler (Silver)");
+            setTipekamar("Quad");
+            setNamalengkap("");
+            setNonik("");
+            setTempatlahir("");
+            setTanggallahir("");
+            setAyahkandung("");
+            setNopaspor("");
+            setExpirepaspor("");
+            setTempatpaspor("");
+            setPasporissued("");
+            setJeniskelamin("Laki-laki");
+            setGolongandarah("");
+            setStatuskawin("Menikah");
+            setNamawaris("");
+            setHubunganwaris("");
+            setEmail("");
+            setNotelponhp("");
+            setPengalaman("Ke-1");
+            setPendidikanterakhir("SD");
+            setPekerjaan("");
+            setPenyakit("");
+            setKeluargadarurat("");
+            setAlamat("");
+            setSisaPembayaran("");
         })
 
     }
@@ -373,6 +527,78 @@ export default function Admin() {
 
     }
 
+    const sendFile = async (e) => {
+        const { error } = await supabase.storage.from('avatars').upload(accusername, accavatar, {
+            upsert: true,
+        })
+        if (error) {
+            console.error('Error uploading file : ', error)
+        } else {
+            console.log('File successfully uploaded')
+        }
+    }
+
+    const handleAccSubmit = async (event) => {
+        event.preventDefault()
+        setSubmitting(true)
+        
+        let verifbool
+        if (accverified == 'Terverifikasi') {
+            verifbool = true
+        } else {
+            verifbool = false
+        }
+
+        let accountData = true
+
+        try {
+            
+            const userbody = {
+                accuserid,
+                accnamalengkap,
+                accemail,
+                accnomortelepon,
+                acctgllahir,
+                accusername,
+                accpassword,
+                accsisapembayaran,
+                accavatar,
+                accountData,
+                verifbool,
+            };
+
+            const validationResult = accschema.safeParse(userbody);
+
+            if (validationResult.success) {
+                await fetch("/api/dataeditor", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(userbody),
+                }).then((response) => {
+                    if (!response.ok) {
+                        setSubmitfail(true)
+                        setSubmitted(false)
+                    } else {
+                        sendFile()
+                        setSubmitted(true)
+                        setSubmitfail(false)
+                    } 
+                })
+                setSubmitting(false);
+            } else {
+                console.error(validationResult.error);
+                setSubmitfail(true);
+                setSubmitted(false);
+            }
+        } catch (error) {
+            console.error(error);
+            setSubmitfail(true);
+            setSubmitted(false);
+        }
+    }
+
     useEffect(() => {
         if (session?.user) {
             setDidaftarkans(session.user.fullname)
@@ -419,6 +645,64 @@ export default function Admin() {
             setStatusbyr('LUNAS')
         }
     }, [sisaPembayaran])
+
+    const handleCreateAcc = async (event) => {
+        event.preventDefault()
+        setSubmitting(true)
+
+        const random = Math.floor(Math.random() * 100000)
+        const randomStr = random.toString()
+
+        const randomID = "ACC-" + randomStr
+        
+        let accbool = true
+
+        try {
+            const userbody = {
+                randomID,
+                accnamalengkap,
+                accemail,
+                accnomortelepon,
+                acctgllahir,
+                accusername,
+                accpassword,
+                accsisapembayaran,
+                accavatar,
+                accbool,
+            };
+
+            const validationResult = accschema.safeParse(userbody);
+
+            if (validationResult.success) {
+                await fetch("/api/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(userbody),
+                }).then((response) => {
+                    if (!response.ok) {
+                        setSubmitfail(true)
+                        setSubmitted(false)
+                    } else {
+                        sendFile()
+                        setSubmitted(true)
+                        setSubmitfail(false)
+                    } 
+                })
+
+                setSubmitting(false);
+            } else {
+                console.error(validationResult.error);
+                setSubmitfail(true);
+                setSubmitted(false);
+            }
+        } catch (error) {
+            console.error(error);
+            setSubmitfail(true);
+            setSubmitted(false);
+        }
+    }
 
     const random = Math.floor(Math.random() * 100000)
     const randomStr = random.toString()
@@ -506,6 +790,11 @@ export default function Admin() {
         fetchUsers()
     }, [searchQuery])
 
+    const profilepicture = (username) => {
+        let pfp = `https://ioijksivulsyacpizroe.supabase.co/storage/v1/object/public/avatars/${username}`
+
+        return pfp
+    }
 
     if (status === 'loading') {
         return <LoadingPage />;
@@ -590,17 +879,17 @@ export default function Admin() {
                                         <div className="stat-desc">Jumlah akun yang terdata dalam database</div>
                                     </div>
                                     <div className="stat bg-primary">
-                                    <div className="stat-title">Total Akun</div>
+                                    <div className="stat-title">Total Akun Terverifikasi</div>
                                         {fetchingData ? (
                                             <div className="stat-value">
                                                 <span className="loading loading-spinner loading-md"></span>
                                             </div>
                                         ) : (
                                             <>
-                                                <div className="stat-value">{accountCount}</div>
+                                                <div className="stat-value">{verifiedAmt}</div>
                                             </>
                                         )}
-                                        <div className="stat-desc">Jumlah akun yang terdata dalam database</div>
+                                        <div className="stat-desc">Jumlah akun terverifikasi yang terdata dalam database</div>
                                     </div>
                                 </div>
                             </div>
@@ -1167,12 +1456,271 @@ export default function Admin() {
                         </div>
 
                     }
+
+                    {accounttable &&
+
+                        <div className="drawer-content flex flex-col text-3xl">
+                            <div className="w-full navbar bg-secondary">
+                                <div className="flex-none lg:hidden">
+                                    <label htmlFor="my-drawer-3" className="btn btn-square btn-primary">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            className="inline-block w-6 h-6 stroke-current"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                        </svg>
+                                    </label>
+                                </div>
+                                <div className="flex-1 px-2 mx-2 text-black">Admin Page</div>
+                            </div>
+                            <div className="grid min-h-screen z-40 bg-red-950 grid-cols-1">
+                                <div>
+                                    <div className="form-control m-2 flex flex-row h-min justify-between">
+                                        <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} type="text" name="search" placeholder="Pencarian" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered w-full max-w-xs" required />
+                                        <div>
+                                            <button
+                                                className="btn btn-primary ml-3"
+                                                onClick={handleRefresh}
+                                                disabled={refreshing}
+                                            >
+                                                Refresh Data
+                                            </button>
+                                            <button
+                                                className="btn btn-primary ml-3"
+                                                onClick={createAccountModalOpener}
+                                            >
+                                                Buat Akun
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="overflow-x-auto m-2 text-black">
+                                        <table className="table text-slate-900 bg-secondary rounded-lg">
+                                            {/* head */}
+                                            <thead className="text-slate-900">
+                                                <tr>
+                                                    <th><span><FontAwesomeIcon icon={faIdCard} /></span> ID</th>
+                                                    <th><span><FontAwesomeIcon icon={faUser} /></span> Nama</th>
+                                                    <th><span><FontAwesomeIcon icon={faEnvelope} /></span> Email</th>
+                                                    <th><span><FontAwesomeIcon icon={faCalendar} /></span> Tanggal Lahir</th>
+                                                    <th><span><FontAwesomeIcon icon={faPhone} /></span> Nomor Telepon</th>
+                                                    <th><span><FontAwesomeIcon icon={faUser} /></span> Username</th>
+                                                    <th><span><FontAwesomeIcon icon={faHandHoldingDollar} /></span> Sisa pembayaran</th>
+                                                    <th><span><FontAwesomeIcon icon={faCalendar} /></span> Data Dibuat</th>
+                                                    <th><span><FontAwesomeIcon icon={faCheckCircle} /></span> Status Verifikasi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {accounts && accounts.map((account, index) => (
+                                                    <>
+                                                        {index === 0 || new Date(account.tanggal_bergabung).toLocaleDateString() !== new Date(accounts[index - 1].tanggal_bergabung).toLocaleDateString() ? (
+                                                            <tr key={`divider-${account.id}`} className="justify-items-center">
+                                                                <td colSpan="4" className="divider bg-primary text-white rounded-lg m-2">
+                                                                    {new Date(account.tanggal_bergabung).toLocaleDateString('in-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                                                                </td>
+                                                            </tr>
+                                                        ) : null}
+                                                        <tr key={account.id}>
+                                                            <td>
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="avatar">
+                                                                        <div className="mask mask-squircle w-12 h-12">
+                                                                            <img src={profilepicture(account.username)} alt="Avatar" />
+                                                                        </div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <div>{account.id}</div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td>{account.nama_lengkap}</td>
+                                                            <td>{account.email}</td>
+                                                            <td>{account.tanggal_lahir}</td>
+                                                            <td>{account.nomor_telepon}</td>
+                                                            <td>{account.username}</td>
+                                                            <td>Rp. {account.sisa_pembayaran},-</td>
+                                                            <td>{new Date(account.tanggal_bergabung).toLocaleString()}</td>
+                                                            <td>{account.is_verified ? "Terverifikasi" : "Belum terverifikasi"}</td>
+                                                            <td>
+                                                                <button onClick={() => editAccountModalOpener(account.id)} className="btn btn-primary"><span><FontAwesomeIcon icon={faPen} /></span></button>
+                                                            </td>
+                                                            <td>
+                                                                <button onClick={() => delAccModalopener(account.id)} className="btn btn-primary"><span><FontAwesomeIcon icon={faTrash} /></span></button>
+                                                            </td>
+                                                        </tr>
+                                                    </>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <dialog id="acc_del_modal" className="modal">
+                                        <div className="modal-box bg-primary text-white">
+                                            <h1 className="text-3xl text-bold text-white">Hapus Data {accuserid}</h1>
+                                            <h1 className="text-xl text-normal text-white "><span><FontAwesomeIcon icon={faWarning} /></span> Anda yakin ingin menghapus data ini?</h1>
+                                            {submitted && (<div className="alert alert-success mt-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                <span>Data anda telah berhasil di hapus! Mohon klik refresh untuk melihat perubahan</span></div>)}
+                                            {submitfail && (<div className="alert alert-error mt-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Error! Mohon coba lagi dalam beberapa saat</span></div>)}
+                                            <div className="modal-action">
+                                                <div>
+                                                    <button id="delbtn" className="btn btn-error" onClick={deleteFunc} disabled={submitting}>Hapus</button>
+                                                </div>
+                                                <form method="dialog">
+                                                    <button className="btn btn-secondary">Close</button>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                    </dialog>
+                                    <dialog id="acc_edit_modal" className="modal">
+                                        <div className="modal-box bg-primary text-white">
+                                            <form onSubmit={handleAccSubmit} className="card-body">
+                                                <h1 className="text-3xl text-bold text-white">Edit Akun</h1>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Nama Lengkap</span>
+                                                    </label>
+                                                    <input type="text" name="Nama lengkap" value={accnamalengkap} onChange={(e) => setAccNamalengkap(e.target.value)} placeholder="contoh : Agus Dewana" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50} />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Email</span>
+                                                    </label>
+                                                    <input type="email" name="Email" value={accemail} onChange={(e) => setAccEmail(e.target.value)} placeholder="contoh : agusdewana@gmail.com" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50} />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Username</span>
+                                                    </label>
+                                                    <input type="text" name="username" value={accusername} onChange={(e) => setAccUsername(e.target.value)} placeholder="contoh : agusdewana99" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={20} />
+                                                </div>
+                                                {/*<div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Password</span>
+                                                    </label>
+                                                    <input type="password" name="Password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Masukkan password" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required minLength={8} />
+                                                        </div>*/}
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">No. Telp/ No. HP/No. WhatsApp</span>
+                                                    </label>
+                                                    <input value={accnomortelepon} onChange={(e) => setAccNomortelepon(e.target.value)} type="number" name="Nomor Telepon" placeholder="contoh : '081356324299' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={16} />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Tanggal Lahir</span>
+                                                    </label>
+                                                    <input value={acctgllahir} onChange={(e) => setAccTgllahir(e.target.value)} type="date" name="Tanggal Lahir" placeholder="17-08-45" className="bg-secondary placeholder-slate-400 text-slate-950 textarea textarea-bordered" required />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Foto Profil</span>
+                                                    </label>
+                                                    <input type="file" name="avatar" onChange={(e) => setAccAvatar(e.target.files[0])} className="bg-secondary text-slate-950  file-input file-input-secondary file-input-bordered w-full max-w-ws" accept="image/*" />
+                                                </div>
+                                                <div className="form-control w-full max-w-xs">
+                                                    <label className="label">
+                                                        <span className="label-text">Status Verifikasi</span>
+                                                    </label>
+                                                    <select value={accverified} onChange={(e) => setAccverified(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
+                                                        <option>Belum terverifikasi</option>
+                                                        <option>Terverifikasi</option>
+                                                    </select>
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Sisa pembayaran</span>
+                                                    </label>
+                                                    <input value={accsisapembayaran} onChange={(e) => setAccSisapembayaran(e.target.value)} type="number" name="No Paspor" placeholder="123456789" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={30} />
+                                                </div>
+                                                <div className="form-control mt-6">
+                                                    {submitting ? (<><input type="submit" value='Mengirim...' className="btn btn-secondary"></input></>) : (<><input type="submit" value='Kirim' className="btn btn-secondary"></input></>)}
+                                                    {submitted && (<div className="alert alert-success mt-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                        <span>Data anda telah berhasil di edit! Mohon klik refresh untuk melihat perubahan</span></div>)}
+                                                    {submitfail && (<div className="alert alert-error mt-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Error! Mohon coba lagi dalam beberapa saat</span></div>)}
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <form method="dialog" className="modal-backdrop">
+                                            <button>X</button>
+                                        </form>
+                                    </dialog>
+                                    <dialog id="acc_create_modal" className="modal">
+                                        <div className="modal-box bg-primary text-white">
+                                        <form onSubmit={handleCreateAcc} className="card-body">
+                                                <h1 className="text-3xl text-bold text-white">Edit Akun</h1>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Nama Lengkap</span>
+                                                    </label>
+                                                    <input type="text" name="Nama lengkap" value={accnamalengkap} onChange={(e) => setAccNamalengkap(e.target.value)} placeholder="contoh : Agus Dewana" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50} />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Email</span>
+                                                    </label>
+                                                    <input type="email" name="Email" value={accemail} onChange={(e) => setAccEmail(e.target.value)} placeholder="contoh : agusdewana@gmail.com" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50} />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Username</span>
+                                                    </label>
+                                                    <input type="text" name="username" value={accusername} onChange={(e) => setAccUsername(e.target.value)} placeholder="contoh : agusdewana99" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={20} />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Password</span>
+                                                    </label>
+                                                    <input type="password" name="Password" value={accpassword} onChange={(e) => setAccPassword(e.target.value)} placeholder="Masukkan password" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required minLength={8} />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">No. Telp/ No. HP/No. WhatsApp</span>
+                                                    </label>
+                                                    <input value={accnomortelepon} onChange={(e) => setAccNomortelepon(e.target.value)} type="number" name="Nomor Telepon" placeholder="contoh : '081356324299' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={16} />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Tanggal Lahir</span>
+                                                    </label>
+                                                    <input value={acctgllahir} onChange={(e) => setAccTgllahir(e.target.value)} type="date" name="Tanggal Lahir" placeholder="17-08-45" className="bg-secondary placeholder-slate-400 text-slate-950 textarea textarea-bordered" required />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Foto Profil</span>
+                                                    </label>
+                                                    <input type="file" name="avatar" onChange={(e) => setAccAvatar(e.target.files[0])} className="bg-secondary text-slate-950  file-input file-input-secondary file-input-bordered w-full max-w-ws" accept="image/*" />
+                                                </div>
+                                                <div className="form-control mt-6">
+                                                    {submitting ? (<><input type="submit" value='Mengirim...' className="btn btn-secondary"></input></>) : (<><input type="submit" value='Kirim' className="btn btn-secondary"></input></>)}
+                                                    {submitted && (<div className="alert alert-success mt-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                        <span>Data anda telah berhasil di kirim! Klik refresh data untuk melihat data baru.</span></div>)}
+                                                    {submitfail && (<div className="alert alert-error mt-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Error! Mohon coba lagi dalam beberapa saat, atau hubungi developer.</span></div>)}
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <form method="dialog" className="modal-backdrop">
+                                            <button>close</button>
+                                        </form>
+                                    </dialog>
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+
                     <div className="drawer-side z-50">
                         <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
                         <ul className="menu p-4 w-80 min-h-full bg-primary">
                             <li className="text-3xl text-white">Halo, {session.user.fullname}</li>
                             <div className="divider"></div>
-                            <li className="text-white text-lg" onClick={() => { setDashboard(true); setUmrahTable(false); }}>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(true); setUmrahTable(false); setAccounttable(false)}}>
                                 <a>
                                     <i>
                                         <FontAwesomeIcon icon={faChartLine} />
@@ -1180,7 +1728,15 @@ export default function Admin() {
                                     Dashboard
                                 </a>
                             </li>
-                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setUmrahTable(true); }}>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setUmrahTable(false); setAccounttable(true); }}>
+                                <a>
+                                    <i>
+                                        <FontAwesomeIcon icon={faUser} />
+                                    </i>
+                                    Daftar Akun
+                                </a>
+                            </li>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setAccounttable(false); setUmrahTable(true); }}>
                                 <a>
                                     <i>
                                         <FontAwesomeIcon icon={faUsers} />
