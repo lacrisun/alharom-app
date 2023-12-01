@@ -822,7 +822,7 @@ export default function Admin() {
                                 </div>
                                 <div className="flex-1 px-2 mx-2 text-black">Admin Page</div>
                             </div>
-                            <div className="grid grid-cols-1 z-40 bg-red-950">
+                            <div className="grid grid-cols-1 z-40 bg-primary">
                                 <div className="form-control ml-2 mb-2 mt-2 flex flex-row h-min justify-between">
                                         <div>
                                             <button
@@ -915,7 +915,7 @@ export default function Admin() {
                                 </div>
                                 <div className="flex-1 px-2 mx-2 text-black">Admin Page</div>
                             </div>
-                            <div className="grid min-h-screen z-40 bg-red-950 grid-cols-1">
+                            <div className="grid min-h-screen z-40 bg-primary grid-cols-1">
                                 <div>
                                     <div className="form-control m-2 flex flex-row h-min justify-between">
                                         <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} type="text" name="search" placeholder="Pencarian" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered w-full max-w-xs" required />
@@ -1475,7 +1475,7 @@ export default function Admin() {
                                 </div>
                                 <div className="flex-1 px-2 mx-2 text-black">Admin Page</div>
                             </div>
-                            <div className="grid min-h-screen z-40 bg-red-950 grid-cols-1">
+                            <div className="grid min-h-screen z-40 bg-primary grid-cols-1">
                                 <div>
                                     <div className="form-control m-2 flex flex-row h-min justify-between">
                                         <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} type="text" name="search" placeholder="Pencarian" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered w-full max-w-xs" required />
@@ -1541,7 +1541,12 @@ export default function Admin() {
                                                             <td>{account.username}</td>
                                                             <td>Rp. {account.sisa_pembayaran},-</td>
                                                             <td>{new Date(account.tanggal_bergabung).toLocaleString()}</td>
-                                                            <td>{account.is_verified ? "Terverifikasi" : "Belum terverifikasi"}</td>
+                                                            
+                                                            <td>
+                                                                <div className={account.is_verified ? 'badge badge-success' : 'badge badge-error'}>
+                                                                    {account.is_verified ? "Terverifikasi" : "Belum\u00A0terverifikasi"}
+                                                                </div>
+                                                            </td>
                                                             <td>
                                                                 <button onClick={() => editAccountModalOpener(account.id)} className="btn btn-primary"><span><FontAwesomeIcon icon={faPen} /></span></button>
                                                             </td>

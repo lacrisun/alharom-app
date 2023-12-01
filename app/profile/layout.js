@@ -3,6 +3,7 @@ import Favicon from '../../public/favicon.ico'
 import localFont from 'next/font/local'
 import { config } from '@fortawesome/fontawesome-svg-core'
 import '@fortawesome/fontawesome-svg-core/styles.css'
+import NextAuthSessionProvider from '@/components/SessionProvider'
 
 require('dotenv').config()
 config.autoAddCss = false
@@ -15,10 +16,12 @@ export const metadata = {
   icons: [{ rel: 'icon', url: Favicon.src }] 
 }
 
-export default function PendaftaranLayout({ children }) {
+export default async function ProfileLayout({ children }) {
   return (
     <html lang="en">
-      <body className={myFont.className}>{children}</body>
+      <body className={myFont.className}>
+        <NextAuthSessionProvider>{children}</NextAuthSessionProvider>
+      </body>
     </html>
   )
 }
