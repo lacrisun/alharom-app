@@ -15,6 +15,8 @@ import NavbarLoggedIn from "@/components/loggedin/navbar";
 import LoadingPage from "@/components/loading";
 import { z } from "zod";
 import prisma from "@/lib/prisma";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 
 export default function Pendaftaran() {
     const router = useRouter()

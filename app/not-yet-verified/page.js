@@ -61,7 +61,7 @@ export default function NotVerified() {
             <LoadingPage/>
         )
     }
-    if (user?.account?.is_verified) { //  || user?.account?.role
+    if (user?.account?.is_verified || user?.account?.role) {
         redirect('/')
     }
     return (
