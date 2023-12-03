@@ -9,6 +9,8 @@ import LoadingPage from "@/components/loading";
 import Link from "next/link";
 import { z } from 'zod';
 import { createClient } from "@supabase/supabase-js";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 
 export default function Login() {
     
