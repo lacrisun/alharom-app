@@ -48,6 +48,18 @@ export async function POST(req) {
                 }
             })
         }
+        if (userData.didaftarkans !== 'User/Sendiri') {
+            await prisma.employee.update({
+                where: {
+                    email: userData.mentoremail
+                },
+                data: {
+                    totaluser: {
+                        increment: 1,
+                    }
+                }
+            })
+        }
         return NextResponse.json({result}, {status: 200})
     } catch (error) {
         console.error(error)

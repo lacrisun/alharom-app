@@ -77,4 +77,5 @@ model Employee {
   password String @db.VarChar(255)
   tanggal_bergabung DateTime @default(now())
   role Roles @default(Mentor)
+  totaluser Int @default(0) @db.Integer
 }

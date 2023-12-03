@@ -13,6 +13,43 @@ export default function FooterRed() {
                     alt="Al-Harom Bina Hati"
                 />
                 <p>PT INDO MITRA ALHAROM<br/>Penyelenggara Haji & Umrah #1 di Riau</p>
+                <div className="flex gap-1">
+                    <Image 
+                        src="/pastiumrah.jpg"
+                        width={45}
+                        height={20}
+                        alt="5 Pasti Umrah"
+                        className="self-center"
+                    />
+                    <Image 
+                        src="/siskopatuh.jpg"
+                        width={45}
+                        height={30}
+                        alt="Sisko Patuh"
+                        className="self-center"
+                    />
+                    <Image 
+                        src="/iata.jpg"
+                        width={45}
+                        height={20}
+                        alt="IATA Certified"
+                        className="self-center"
+                    />
+                    <Image 
+                        src="/asita.jpg"
+                        width={45}
+                        height={20}
+                        alt="ASITA"
+                        className="self-center"
+                    />
+                    <Image 
+                        src="/himpuh.jpg"
+                        width={45}
+                        height={20}
+                        alt="Himpuh"
+                        className="self-center"
+                    />
+                </div>
             </aside> 
             <nav>
                 <header className="footer-title">Social</header> 

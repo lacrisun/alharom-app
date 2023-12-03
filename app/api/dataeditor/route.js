@@ -37,7 +37,29 @@ export async function POST(req) {
         } finally {
             await prisma.$disconnect() 
         }
-    } else {
+    } else if (userData.employeeData) {
+      try {
+          const result = await prisma.employee.update({
+              where: {
+                  id: userData.empuserid
+              },
+              data: {
+                  nama_lengkap: userData.empnamalengkap,
+                  email: userData.empemail,
+                  nomor_telepon: userData.empnomortelepon,
+                  tanggal_lahir: userData.emptgllahir,
+                  username: userData.empusername,
+                  role: userData.emprole
+              }
+          })
+          return NextResponse.json({result}, {status: 200})
+      } catch (error) {
+          console.error(error)
+          return NextResponse.json({error}, {status: 500})
+      } finally {
+          await prisma.$disconnect() 
+      }
+  } else {
         try {
             const result = await prisma.user.update({
                 where: {

@@ -30,7 +30,32 @@ export async function POST(req) {
         } finally {
             await prisma.$disconnect()
         }
-    } else {
+    } else if (userData.empbool) {
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(userData.emppassword, saltRounds);
+
+        try {
+            const result = await prisma.employee.create({
+                data: {
+                    id: userData.randomID,
+                    nama_lengkap: userData.empnamalengkap,
+                    email: userData.empemail,
+                    nomor_telepon: userData.empnomortelepon,
+                    tanggal_lahir: userData.emptgllahir,
+                    username: userData.empusername,
+                    password: hashedPassword,
+                    role: userData.emprole,
+                }
+            })
+            return NextResponse.json({ result }, { status: 200 })
+        } catch (error) {
+            console.error(error)
+            return NextResponse.json({ error }, { status: 500 })
+        } finally {
+            await prisma.$disconnect()
+        }
+    }
+     else {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
 

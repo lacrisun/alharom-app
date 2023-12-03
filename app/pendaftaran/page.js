@@ -25,8 +25,37 @@ export default function Pendaftaran() {
     const xenditInvoiceClient = new InvoiceClient({secretKey: secret})
 
     const {data: session, status} = useSession()
+    const [user, setUser] = useState({})
 
-    // what
+    const getUserData = async (email) => {
+        try {
+            const data = {
+                email
+            }
+            await fetch('/api/userinfo', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data),
+            }) .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok')
+                }
+                return response.json()
+            }) .then((data) => {
+                setUser(data)
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        if(status === 'authenticated') {
+            getUserData(session.user.email)
+        }
+    }, [status])
 
     const [paketumrah, setPaketumrah] = useState("Umrah Reguler (Silver)");
     const [tipekamar, setTipekamar] = useState("Quad");
@@ -63,10 +92,13 @@ export default function Pendaftaran() {
 
     const [payment, setPayment] = useState("Angsuran")
 
+    const [mentoremail, setMentoremail] = useState("")
+
     useEffect(() => {
         if (session?.user.role === 'Mentor' || session?.user.role === 'Admin') {
             setDidaftarkans(session.user.fullname)
             setNonuser(true)
+            setMentoremail(session.user.email)
         }
     }, [session])
 
@@ -150,6 +182,7 @@ export default function Pendaftaran() {
                 price,
                 nonuser,
                 payment,
+                mentoremail
             };
 
             const validationResult = schema.safeParse(userbody);
@@ -227,6 +260,11 @@ export default function Pendaftaran() {
     if (!session?.user) {
         return (
             redirect('/login')
+        )
+    }
+    if (!user.account.is_verified) {
+        return (
+            redirect('/not-yet-verified')
         )
     }
     return (
@@ -432,6 +470,15 @@ export default function Pendaftaran() {
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+        <div className="toast toast-end z-30 items-center">
+            <div className="flex bg-primary rounded-xl text-white hover:scale-105 transition-transform duration-300">
+                <a href="https://wa.me/6281361126363?text=Assalamualaikum%20saya%20ingin%20mengetahui%20program%20keberangkatan%20umroh%20dan%20haji%20alharom%20bina%20hati">
+                    <span className='flex m-4'>
+                        <FontAwesomeIcon icon={faWhatsapp} className='self-center' size='2xl' />
+                    </span>
+                </a>
             </div>
         </div>
         <Footer />

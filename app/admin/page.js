@@ -4,7 +4,7 @@ import AdminNav from "@/components/admincomponents/adminnavbar";
 import Dashboard from "@/components/admincomponents/dashboard";
 import LoadingPage from "@/components/loading";
 import prisma from "@/lib/prisma";
-import { faAddressCard, faBed, faBook, faCalendar, faChartLine, faCheckCircle, faEnvelope, faFileInvoice, faFileInvoiceDollar, faHandHoldingDollar, faHeartPulse, faHome, faIdCard, faLocationDot, faMapLocationDot, faMoneyBill, faNotesMedical, faPassport, faPen, faPersonCircleCheck, faPhone, faPhoneVolume, faPlaneDeparture, faRightFromBracket, faTrash, faUser, faUserDoctor, faUserGroup, faUsers, faVenusMars, faWarning } from "@fortawesome/free-solid-svg-icons";
+import { faAddressCard, faBed, faBook, faBuildingUser, faCalendar, faChartLine, faCheckCircle, faEnvelope, faFileInvoice, faFileInvoiceDollar, faHandHoldingDollar, faHeartPulse, faHome, faIdCard, faLocationDot, faMapLocationDot, faMoneyBill, faNotesMedical, faPassport, faPen, faPersonCircleCheck, faPhone, faPhoneVolume, faPlaneDeparture, faRightFromBracket, faTrash, faUser, faUserDoctor, faUserGroup, faUsers, faVenusMars, faWarning } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
@@ -21,9 +21,6 @@ export default function Admin() {
 
     const supabase = createClient('https://ioijksivulsyacpizroe.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlvaWprc2l2dWxzeWFjcGl6cm9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTU3MzIxOTEsImV4cCI6MjAxMTMwODE5MX0.0KvEsY8u2iqEU39dtkoEmD_4XiY8atR7ELC-CH5NIZw')
 
-
-    Chart.register(CategoryScale, LinearScale, BarElement, Tooltip)
-
     const [userCount, setUserCount] = useState(0)
     const [userpermonth, setUserpermonth] = useState(0)
     const [accountCount, setAccountCount] = useState(0)
@@ -31,9 +28,11 @@ export default function Admin() {
     const [dashboard, setDashboard] = useState(true)
     const [umrahtable, setUmrahTable] = useState(false)
     const [accounttable, setAccounttable] = useState(false)
+    const [employeetable, setEmployeetable] = useState(false)
 
     const [accounts, setAccounts] = useState([])
     const [users, setUsers] = useState([])
+    const [employee, setEmployee] = useState([])
     const [searchQuery, setSearchQuery] = useState('');
     const [currentDay, setCurrentDay] = useState('');
 
@@ -88,7 +87,18 @@ export default function Admin() {
     const [accavatar, setAccAvatar] = useState(null)
     const [accverified, setAccverified] = useState("Belum terverifikasi")
 
+    const [empuserid, setEmpUserId] = useState("")
+    const [empnamalengkap, setEmpNamalengkap] = useState("")
+    const [empemail, setEmpEmail] = useState("")
+    const [empnomortelepon, setEmpNomortelepon] = useState("")
+    const [emptgllahir, setEmpTgllahir] = useState("")
+    const [empusername, setEmpUsername] = useState(accnamalengkap.toLowerCase())
+    const [emppassword, setEmpPassword] = useState("")
+    const [empavatar, setEmpAvatar] = useState(null)
+    const [emprole, setEmpRole] = useState("Mentor")
+
     const roles = session?.user.role;
+    const mentoremail = session?.user.email
 
     const date = new Date()
     const today = date.toLocaleString('default', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -117,44 +127,17 @@ export default function Admin() {
         accnomortelepon: z.string().max(16, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
         acctgllahir: z.string().max(20, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
         accusername: z.string().max(20, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
-        // accpassword: z.string().max(255, "Tidak boleh melebihi batas huruf").min(8, "Wajib di isi"),
+        accpassword: z.string().max(255, "Tidak boleh melebihi batas huruf").min(8, "Wajib di isi"),
     })
 
-    const labels = ['Jan', 'Feb', 'Mar', 'Apr']
-
-    const data = {
-        labels: labels,
-        datasets: [{
-            label: 'My First Dataset',
-            data: [65, 59, 80, 81],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(255, 159, 64, 0.2)',
-                'rgba(255, 205, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-            ],
-            borderColor: [
-                'rgb(255, 99, 132)',
-                'rgb(255, 159, 64)',
-                'rgb(255, 205, 86)',
-                'rgb(75, 192, 192)',
-            ],
-            borderWidth: 1
-        }]
-    };
-
-    const options = {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top'
-            },
-            title: {
-                display: true,
-                text: 'lmao banget'
-            }
-        }
-    }
+    const empschema = z.object({
+        empnamalengkap: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        empemail: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        empnomortelepon: z.string().max(16, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        emptgllahir: z.string().max(20, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        empusername: z.string().max(20, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        emppassword: z.string().max(255, "Tidak boleh melebihi batas huruf").min(8, "Wajib di isi"),
+    })
 
     const fetchUserCount = async () => {
         try {
@@ -202,8 +185,10 @@ export default function Admin() {
             const data = await response.json();
             const users = data.responseUserData;
             const accounts = data.responseAccountData
+            const employee = data.responseEmployeeData
             const accArray = JSON.parse(accounts)
             const userArray = JSON.parse(users);
+            const empArray = JSON.parse(employee)
 
             const sortedUsers = userArray.sort((a, b) => new Date(b.data_dibuat) - new Date(a.data_dibuat));
             const filteredUsers = sortedUsers.filter((user) => {
@@ -215,8 +200,14 @@ export default function Admin() {
                 return account.nama_lengkap.toLowerCase().includes(searchQuery.toLowerCase());
             });
 
+            const sortedEmployees = empArray.sort((a, b) => new Date(b.tanggal_bergabung) - new Date(a.tanggal_bergabung));
+            const filteredEmployees = sortedEmployees.filter((employee) => {
+                return employee.nama_lengkap.toLowerCase().includes(searchQuery.toLowerCase());
+            });
+
             setUsers(filteredUsers);
             setAccounts(filteredAccounts)
+            setEmployee(filteredEmployees)
 
             if (filteredUsers.length > 0) {
                 const firstUserDate = new Date(filteredUsers[0].data_dibuat);
@@ -276,13 +267,29 @@ export default function Admin() {
         
     }
 
+    const delEmpModalopener = (empID) => {
+        const modal = document.getElementById('emp_del_modal')
+        modal.showModal()
+
+        const emp = employee.find((emp) => emp.id === empID);
+
+        setEmpUserId(emp.id)
+
+        modal.addEventListener('close', () => {
+            setSubmitted(false)
+            setSubmitfail(false)
+        })
+        
+    }
+
     const deleteFunc = async (e) => {
         e.preventDefault()
         setSubmitting(true)
         try {
             const userbody = {
                 userID,
-                accuserid
+                accuserid,
+                empuserid,
             }
             await fetch("/api/deleterec", {
                 method: "POST",
@@ -349,6 +356,50 @@ export default function Admin() {
             setAccTgllahir("");
             setAccUsername("");
             setAccSisapembayaran("");
+            setSubmitted(false);
+            setSubmitfail(false);
+        });
+
+    }
+
+    const createEmployeeModalOpener = () => {
+        const modal = document.getElementById('emp_create_modal')
+        modal.showModal()
+
+        modal.addEventListener('close', () => {
+            setEmpUserId("");
+            setEmpNamalengkap("");
+            setEmpEmail("");
+            setEmpNomortelepon("");
+            setEmpTgllahir("");
+            setEmpUsername("");
+            setAccAvatar(null)
+            setSubmitted(false);
+            setSubmitfail(false);
+        })
+    }
+
+    const editEmployeeModalOpener = async (empID) => {
+        const modal = document.getElementById('emp_edit_modal')
+        modal.showModal()
+
+        const emp = employee.find((emp) => emp.id === empID);
+
+        setEmpUserId(emp.id)
+        
+        setEmpNamalengkap(emp.nama_lengkap)
+        setEmpEmail(emp.email)
+        setEmpNomortelepon(emp.nomor_telepon)
+        setEmpTgllahir(emp.tanggal_lahir)
+        setEmpUsername(emp.username)
+
+        modal.addEventListener('close', () => {
+            setEmpUserId("");
+            setEmpNamalengkap("");
+            setEmpEmail("");
+            setEmpNomortelepon("");
+            setEmpTgllahir("");
+            setEmpUsername("");
             setSubmitted(false);
             setSubmitfail(false);
         });
@@ -527,8 +578,8 @@ export default function Admin() {
 
     }
 
-    const sendFile = async (e) => {
-        const { error } = await supabase.storage.from('avatars').upload(accusername, accavatar, {
+    const sendFile = async (filename, file) => {
+        const { error } = await supabase.storage.from('avatars').upload(filename, file, {
             upsert: true,
         })
         if (error) {
@@ -581,7 +632,60 @@ export default function Admin() {
                         setSubmitfail(true)
                         setSubmitted(false)
                     } else {
-                        sendFile()
+                        sendFile(accusername, accavatar)
+                        setSubmitted(true)
+                        setSubmitfail(false)
+                    } 
+                })
+                setSubmitting(false);
+            } else {
+                console.error(validationResult.error);
+                setSubmitfail(true);
+                setSubmitted(false);
+            }
+        } catch (error) {
+            console.error(error);
+            setSubmitfail(true);
+            setSubmitted(false);
+        }
+    }
+
+    const handleEmpSubmit = async (event) => {
+        event.preventDefault()
+        setSubmitting(true)
+
+        let employeeData = true
+
+        try {
+            
+            const userbody = {
+                empuserid,
+                empnamalengkap,
+                empemail,
+                empnomortelepon,
+                emptgllahir,
+                empusername,
+                emppassword,
+                empavatar,
+                employeeData,
+                emprole,
+            };
+
+            const validationResult = empschema.safeParse(userbody);
+
+            if (validationResult.success) {
+                await fetch("/api/dataeditor", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(userbody),
+                }).then((response) => {
+                    if (!response.ok) {
+                        setSubmitfail(true)
+                        setSubmitted(false)
+                    } else {
+                        sendFile(empusername, empavatar)
                         setSubmitted(true)
                         setSubmitfail(false)
                     } 
@@ -704,15 +808,72 @@ export default function Admin() {
         }
     }
 
-    const random = Math.floor(Math.random() * 100000)
-    const randomStr = random.toString()
+    const handleCreateEmp = async (event) => {
+        event.preventDefault()
+        setSubmitting(true)
 
-    const randomID = "ALHRM-" + randomStr
+        const random = Math.floor(Math.random() * 100000)
+        const randomStr = random.toString()
+
+        const randomID = "EMP-" + randomStr
+        
+        let empbool = true
+
+        try {
+            const userbody = {
+                randomID,
+                empnamalengkap,
+                empemail,
+                empnomortelepon,
+                emptgllahir,
+                empusername,
+                emppassword,
+                empavatar,
+                emprole,
+                empbool,
+            };
+
+            const validationResult = empschema.safeParse(userbody);
+
+            if (validationResult.success) {
+                await fetch("/api/register", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(userbody),
+                }).then((response) => {
+                    if (!response.ok) {
+                        setSubmitfail(true)
+                        setSubmitted(false)
+                    } else {
+                        sendFile()
+                        setSubmitted(true)
+                        setSubmitfail(false)
+                    } 
+                })
+
+                setSubmitting(false);
+            } else {
+                console.error(validationResult.error);
+                setSubmitfail(true);
+                setSubmitted(false);
+            }
+        } catch (error) {
+            console.error(error);
+            setSubmitfail(true);
+            setSubmitted(false);
+        }
+    }
 
     const handleCreateSubmit = async (event) => {
         event.preventDefault()
         setSubmitting(true)
 
+        const random = Math.floor(Math.random() * 100000)
+        const randomStr = random.toString()
+
+        const randomID = "ALHRM-" + randomStr
         
         try {
             const userbody = {
@@ -746,6 +907,7 @@ export default function Admin() {
                 price,
                 nonuser,
                 payment,
+                mentoremail,
             };
 
             const validationResult = schema.safeParse(userbody);
@@ -822,7 +984,7 @@ export default function Admin() {
                                 </div>
                                 <div className="flex-1 px-2 mx-2 text-black">Admin Page</div>
                             </div>
-                            <div className="grid grid-cols-1 z-40 bg-primary">
+                            <div className="grid grid-cols-1 z-40 bg-red-950">
                                 <div className="form-control ml-2 mb-2 mt-2 flex flex-row h-min justify-between">
                                         <div>
                                             <button
@@ -915,7 +1077,7 @@ export default function Admin() {
                                 </div>
                                 <div className="flex-1 px-2 mx-2 text-black">Admin Page</div>
                             </div>
-                            <div className="grid min-h-screen z-40 bg-primary grid-cols-1">
+                            <div className="grid min-h-screen z-40 bg-red-950 grid-cols-1">
                                 <div>
                                     <div className="form-control m-2 flex flex-row h-min justify-between">
                                         <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} type="text" name="search" placeholder="Pencarian" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered w-full max-w-xs" required />
@@ -937,7 +1099,6 @@ export default function Admin() {
                                     </div>
                                     <div className="overflow-x-auto m-2 text-black">
                                         <table className="table text-slate-900 bg-secondary rounded-lg">
-                                            {/* head */}
                                             <thead className="text-slate-900">
                                                 <tr>
                                                     <th><span><FontAwesomeIcon icon={faIdCard} /></span> ID</th>
@@ -1475,7 +1636,7 @@ export default function Admin() {
                                 </div>
                                 <div className="flex-1 px-2 mx-2 text-black">Admin Page</div>
                             </div>
-                            <div className="grid min-h-screen z-40 bg-primary grid-cols-1">
+                            <div className="grid min-h-screen z-40 bg-red-950 grid-cols-1">
                                 <div>
                                     <div className="form-control m-2 flex flex-row h-min justify-between">
                                         <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} type="text" name="search" placeholder="Pencarian" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered w-full max-w-xs" required />
@@ -1720,12 +1881,272 @@ export default function Admin() {
 
                     }
 
+                    {employeetable &&
+
+                        <div className="drawer-content flex flex-col text-3xl">
+                            <div className="w-full navbar bg-secondary">
+                                <div className="flex-none lg:hidden">
+                                    <label htmlFor="my-drawer-3" className="btn btn-square btn-primary">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            className="inline-block w-6 h-6 stroke-current"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                        </svg>
+                                    </label>
+                                </div>
+                                <div className="flex-1 px-2 mx-2 text-black">Admin Page</div>
+                            </div>
+                            <div className="grid min-h-screen z-40 bg-red-950 grid-cols-1">
+                                <div>
+                                    <div className="form-control m-2 flex flex-row h-min justify-between">
+                                        <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} type="text" name="search" placeholder="Pencarian" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered w-full max-w-xs" required />
+                                        <div>
+                                            <button
+                                                className="btn btn-primary ml-3"
+                                                onClick={handleRefresh}
+                                                disabled={refreshing}
+                                            >
+                                                Refresh Data
+                                            </button>
+                                            <button
+                                                className="btn btn-primary ml-3"
+                                                onClick={createEmployeeModalOpener}
+                                            >
+                                                Buat Akun
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="overflow-x-auto m-2 text-black">
+                                        <table className="table text-slate-900 bg-secondary rounded-lg">
+                                            {/* head */}
+                                            <thead className="text-slate-900">
+                                                <tr>
+                                                    <th><span><FontAwesomeIcon icon={faIdCard} /></span> ID</th>
+                                                    <th><span><FontAwesomeIcon icon={faUser} /></span> Nama</th>
+                                                    <th><span><FontAwesomeIcon icon={faEnvelope} /></span> Email</th>
+                                                    <th><span><FontAwesomeIcon icon={faCalendar} /></span> Tanggal Lahir</th>
+                                                    <th><span><FontAwesomeIcon icon={faPhone} /></span> Nomor Telepon</th>
+                                                    <th><span><FontAwesomeIcon icon={faUser} /></span> Username</th>
+                                                    <th><span><FontAwesomeIcon icon={faCalendar} /></span> Tanggal Bergabung</th>
+                                                    <th>
+                                                        <span><FontAwesomeIcon icon={faUsers}/> Jumlah Didaftarkan</span>
+                                                    </th>
+                                                    <th><span><FontAwesomeIcon icon={faCheckCircle} /></span> Role/Jabatan</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {employee && employee.map((emp, index) => (
+                                                    <>
+                                                        <tr key={emp.id}>
+                                                            <td>
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="avatar">
+                                                                        <div className="mask mask-squircle w-12 h-12">
+                                                                            <img src={profilepicture(emp.username)} alt="Avatar" />
+                                                                        </div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <div>{emp.id}</div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td>{emp.nama_lengkap}</td>
+                                                            <td>{emp.email}</td>
+                                                            <td>{emp.tanggal_lahir}</td>
+                                                            <td>{emp.nomor_telepon}</td>
+                                                            <td>{emp.username}</td>
+                                                            <td>{new Date(emp.tanggal_bergabung).toLocaleString()}</td>
+                                                            <td>
+                                                                {emp.totaluser}
+                                                            </td>
+                                                            <td>
+                                                                {emp.role}
+                                                            </td>
+                                                            <td>
+                                                                <button onClick={() => editEmployeeModalOpener(emp.id)} className="btn btn-primary"><span><FontAwesomeIcon icon={faPen} /></span></button>
+                                                            </td>
+                                                            <td>
+                                                                <button onClick={() => delEmpModalopener(emp.id)} className="btn btn-primary"><span><FontAwesomeIcon icon={faTrash} /></span></button>
+                                                            </td>
+                                                        </tr>
+                                                    </>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <dialog id="emp_del_modal" className="modal">
+                                        <div className="modal-box bg-primary text-white">
+                                            <h1 className="text-3xl text-bold text-white">Hapus Data {empuserid}</h1>
+                                            <h1 className="text-xl text-normal text-white "><span><FontAwesomeIcon icon={faWarning} /></span> Anda yakin ingin menghapus data ini?</h1>
+                                            {submitted && (<div className="alert alert-success mt-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                <span>Data anda telah berhasil di hapus! Mohon klik refresh untuk melihat perubahan</span></div>)}
+                                            {submitfail && (<div className="alert alert-error mt-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Error! Mohon coba lagi dalam beberapa saat</span></div>)}
+                                            <div className="modal-action">
+                                                <div>
+                                                    <button id="delbtn" className="btn btn-error" onClick={deleteFunc} disabled={submitting}>Hapus</button>
+                                                </div>
+                                                <form method="dialog">
+                                                    <button className="btn btn-secondary">Close</button>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                    </dialog>
+                                    <dialog id="emp_edit_modal" className="modal">
+                                        <div className="modal-box bg-primary text-white">
+                                            <form onSubmit={handleEmpSubmit} className="card-body">
+                                                <h1 className="text-3xl text-bold text-white">Edit Akun Pegawai</h1>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Nama Lengkap</span>
+                                                    </label>
+                                                    <input type="text" name="Nama lengkap" value={empnamalengkap} onChange={(e) => setEmpNamalengkap(e.target.value)} placeholder="contoh : Agus Dewana" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50} />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Email</span>
+                                                    </label>
+                                                    <input type="email" name="Email" value={empemail} onChange={(e) => setEmpEmail(e.target.value)} placeholder="contoh : agusdewana@gmail.com" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50} />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Username</span>
+                                                    </label>
+                                                    <input type="text" name="username" value={empusername} onChange={(e) => setEmpUsername(e.target.value)} placeholder="contoh : agusdewana99" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={20} />
+                                                </div>
+                                                {/*<div className="form-control">
+                            <label className="label">
+                                <span className="label-text">Password</span>
+                            </label>
+                            <input type="password" name="Password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Masukkan password" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required minLength={8} />
+                                </div>*/}
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">No. Telp/ No. HP/No. WhatsApp</span>
+                                                    </label>
+                                                    <input value={empnomortelepon} onChange={(e) => setEmpNomortelepon(e.target.value)} type="number" name="Nomor Telepon" placeholder="contoh : '081356324299' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={16} />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Tanggal Lahir</span>
+                                                    </label>
+                                                    <input value={emptgllahir} onChange={(e) => setEmpTgllahir(e.target.value)} type="date" name="Tanggal Lahir" placeholder="17-08-45" className="bg-secondary placeholder-slate-400 text-slate-950 textarea textarea-bordered" required />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Foto Profil</span>
+                                                    </label>
+                                                    <input type="file" name="avatar" onChange={(e) => setEmpAvatar(e.target.files[0])} className="bg-secondary text-slate-950  file-input file-input-secondary file-input-bordered w-full max-w-ws" accept="image/*" />
+                                                </div>
+                                                <div className="form-control w-full max-w-xs">
+                                                    <label className="label">
+                                                        <span className="label-text">Status Verifikasi</span>
+                                                    </label>
+                                                    <select value={emprole} onChange={(e) => setEmpRole(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
+                                                        <option>Mentor</option>
+                                                        <option>Admin</option>
+                                                    </select>
+                                                </div>
+                                                <div className="form-control mt-6">
+                                                    {submitting ? (<><input type="submit" value='Mengirim...' className="btn btn-secondary"></input></>) : (<><input type="submit" value='Kirim' className="btn btn-secondary"></input></>)}
+                                                    {submitted && (<div className="alert alert-success mt-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                        <span>Data anda telah berhasil di edit! Mohon klik refresh untuk melihat perubahan</span></div>)}
+                                                    {submitfail && (<div className="alert alert-error mt-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Error! Mohon coba lagi dalam beberapa saat</span></div>)}
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <form method="dialog" className="modal-backdrop">
+                                            <button>X</button>
+                                        </form>
+                                    </dialog>
+                                    <dialog id="emp_create_modal" className="modal">
+                                        <div className="modal-box bg-primary text-white">
+                                            <form onSubmit={handleCreateEmp} className="card-body">
+                                                <h1 className="text-3xl text-bold text-white">Edit Akun</h1>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Nama Lengkap</span>
+                                                    </label>
+                                                    <input type="text" name="Nama lengkap" value={empnamalengkap} onChange={(e) => setEmpNamalengkap(e.target.value)} placeholder="contoh : Agus Dewana" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50} />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Email</span>
+                                                    </label>
+                                                    <input type="email" name="Email" value={empemail} onChange={(e) => setEmpEmail(e.target.value)} placeholder="contoh : agusdewana@gmail.com" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50} />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Username</span>
+                                                    </label>
+                                                    <input type="text" name="username" value={empusername} onChange={(e) => setEmpUsername(e.target.value)} placeholder="contoh : agusdewana99" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={20} />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Password</span>
+                                                    </label>
+                                                    <input type="password" name="Password" value={emppassword} onChange={(e) => setEmpPassword(e.target.value)} placeholder="Masukkan password" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required minLength={8} />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">No. Telp/ No. HP/No. WhatsApp</span>
+                                                    </label>
+                                                    <input value={empnomortelepon} onChange={(e) => setEmpNomortelepon(e.target.value)} type="number" name="Nomor Telepon" placeholder="contoh : '081356324299' " className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={16} />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Tanggal Lahir</span>
+                                                    </label>
+                                                    <input value={emptgllahir} onChange={(e) => setEmpTgllahir(e.target.value)} type="date" name="Tanggal Lahir" placeholder="17-08-45" className="bg-secondary placeholder-slate-400 text-slate-950 textarea textarea-bordered" required />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Foto Profil</span>
+                                                    </label>
+                                                    <input type="file" name="avatar" onChange={(e) => setEmpAvatar(e.target.files[0])} className="bg-secondary text-slate-950  file-input file-input-secondary file-input-bordered w-full max-w-ws" accept="image/*" />
+                                                </div>
+                                                <div className="form-control w-full max-w-xs">
+                                                    <label className="label">
+                                                        <span className="label-text">Status Verifikasi</span>
+                                                    </label>
+                                                    <select value={emprole} onChange={(e) => setEmpRole(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
+                                                        <option>Mentor</option>
+                                                        <option>Admin</option>
+                                                    </select>
+                                                </div>
+                                                <div className="form-control mt-6">
+                                                    {submitting ? (<><input type="submit" value='Mengirim...' className="btn btn-secondary"></input></>) : (<><input type="submit" value='Kirim' className="btn btn-secondary"></input></>)}
+                                                    {submitted && (<div className="alert alert-success mt-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                        <span>Data anda telah berhasil di kirim! Klik refresh data untuk melihat data baru.</span></div>)}
+                                                    {submitfail && (<div className="alert alert-error mt-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Error! Mohon coba lagi dalam beberapa saat, atau hubungi developer.</span></div>)}
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <form method="dialog" className="modal-backdrop">
+                                            <button>close</button>
+                                        </form>
+                                    </dialog>
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+
                     <div className="drawer-side z-50">
                         <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
                         <ul className="menu p-4 w-80 min-h-full bg-primary">
                             <li className="text-3xl text-white">Halo, {session.user.fullname}</li>
                             <div className="divider"></div>
-                            <li className="text-white text-lg" onClick={() => { setDashboard(true); setUmrahTable(false); setAccounttable(false)}}>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(true); setUmrahTable(false); setAccounttable(false); setEmployee(false)}}>
                                 <a>
                                     <i>
                                         <FontAwesomeIcon icon={faChartLine} />
@@ -1733,7 +2154,7 @@ export default function Admin() {
                                     Dashboard
                                 </a>
                             </li>
-                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setUmrahTable(false); setAccounttable(true); }}>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setUmrahTable(false); setEmployeetable(false); setAccounttable(true);}}>
                                 <a>
                                     <i>
                                         <FontAwesomeIcon icon={faUser} />
@@ -1741,12 +2162,20 @@ export default function Admin() {
                                     Daftar Akun
                                 </a>
                             </li>
-                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setAccounttable(false); setUmrahTable(true); }}>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setAccounttable(false); setEmployeetable(false); setUmrahTable(true); }}>
                                 <a>
                                     <i>
                                         <FontAwesomeIcon icon={faUsers} />
                                     </i>
                                     Daftar Calon Umrah
+                                </a>
+                            </li>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setAccounttable(false); setEmployeetable(true); setUmrahTable(false); }}>
+                                <a>
+                                    <i>
+                                        <FontAwesomeIcon icon={faBuildingUser} />
+                                    </i>
+                                    Daftar Pegawai/Mentor
                                 </a>
                             </li>
                             <li className="text-white text-lg" onClick={() => signOut()}>

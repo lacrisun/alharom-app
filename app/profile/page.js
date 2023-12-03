@@ -82,7 +82,7 @@ export default function Profile() {
                                         ) : (
                                             <>
                                                 {user?.account?.tanggal_lahir ? (
-                                                    <div className="text-lg">{user.account.tanggal_lahir}</div>
+                                                    <div className="text-lg">{new Date(user.account.tanggal_lahir).toLocaleDateString('id-ID')}</div>
                                                 ) : (
                                                     <div className="text-lg loading loading-spinner loading-md"></div>
                                                 )}
@@ -136,7 +136,23 @@ export default function Profile() {
                                             )}
                                         </>
                                     )}
-                            </div>
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-bold">Sisa pembayaran</h3>
+                                    {fetchingData ? (
+                                        <div className="text-lg">
+                                            <span className="loading loading-spinner loading-md"></span>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            {user?.account?.sisa_pembayaran ? (
+                                                <div className="text-lg">{user.account.sisa_pembayaran}</div>
+                                            ) : (
+                                                <div className="text-lg loading loading-spinner loading-md"></div>
+                                            )}
+                                        </>
+                                    )}
+                                </div>
                             <div className="flex flex-col sm:flex-row w-full justify-around">
 
                             </div>
