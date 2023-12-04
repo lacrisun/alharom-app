@@ -513,7 +513,9 @@ export default function Admin() {
     const handleSubmit = async (e) => {
         e.preventDefault()
         setSubmitting(true)
+        let usersData = true
 
+        
         try {
             const userbody = {
                 userID,
@@ -543,6 +545,7 @@ export default function Admin() {
                 keluargadarurat,
                 sisaPembayaran,
                 statusbyr,
+                usersData,
             };
 
             const validationResult = schema.safeParse(userbody);
