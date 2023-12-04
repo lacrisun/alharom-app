@@ -6,7 +6,7 @@ export async function POST(req) {
 
     if (userData.accountData) {
         try {
-            const result = await prisma.accounts.update({
+            let result = await prisma.accounts.update({
                 where: {
                     id: userData.accuserid
                 },
@@ -39,7 +39,7 @@ export async function POST(req) {
         }
     } else if (userData.employeeData) {
       try {
-          const result = await prisma.employee.update({
+          let result = await prisma.employee.update({
               where: {
                   id: userData.empuserid
               },
@@ -61,7 +61,7 @@ export async function POST(req) {
       }
   } else {
         try {
-            const result = await prisma.user.update({
+            let result = await prisma.user.update({
                 where: {
                     id: userData.userID
                 },
