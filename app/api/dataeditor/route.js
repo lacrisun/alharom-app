@@ -21,14 +21,22 @@ export async function POST(req) {
                 }
             })
             if (result.email) {
-                await prisma.user.update({
+                const user = await prisma.user.findUnique({
                   where: {
-                    email: userData.accemail
-                  },
-                  data: {
-                    sisa_bayar: userData.accsisapembayaran
+                    email: result.email
                   }
-                }) 
+                });
+              
+                if (user) {
+                  await prisma.user.update({
+                    where: {
+                      email: userData.accemail
+                    },
+                    data: {
+                      sisa_bayar: userData.accsisapembayaran
+                    }
+                  });
+                }
               }
             return NextResponse.json({result}, {status: 200})
         } catch (error) {
