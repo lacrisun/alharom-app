@@ -130,6 +130,15 @@ export default function Admin() {
         accpassword: z.string().max(255, "Tidak boleh melebihi batas huruf").min(8, "Wajib di isi"),
     })
 
+    const acceditschema = z.object({
+        accnamalengkap: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        accemail: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        accnomortelepon: z.string().max(16, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        acctgllahir: z.string().max(20, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        accusername: z.string().max(20, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+    })
+
+
     const empschema = z.object({
         empnamalengkap: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
         empemail: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
@@ -137,6 +146,14 @@ export default function Admin() {
         emptgllahir: z.string().max(20, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
         empusername: z.string().max(20, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
         emppassword: z.string().max(255, "Tidak boleh melebihi batas huruf").min(8, "Wajib di isi"),
+    })
+
+    const empeditschema = z.object({
+        empnamalengkap: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        empemail: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        empnomortelepon: z.string().max(16, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        emptgllahir: z.string().max(20, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+        empusername: z.string().max(20, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
     })
 
     const fetchUserCount = async () => {
@@ -620,7 +637,7 @@ export default function Admin() {
                 verifbool,
             };
 
-            const validationResult = accschema.safeParse(userbody);
+            const validationResult = acceditschema.safeParse(userbody);
 
             if (validationResult.success) {
                 await fetch("/api/dataeditor", {
@@ -672,7 +689,7 @@ export default function Admin() {
                 emprole,
             };
 
-            const validationResult = empschema.safeParse(userbody);
+            const validationResult = empeditschema.safeParse(userbody);
 
             if (validationResult.success) {
                 await fetch("/api/dataeditor", {
