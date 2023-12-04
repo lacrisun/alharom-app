@@ -19,7 +19,7 @@ export async function POST(req) {
                 },
             })
             return NextResponse.json({result}, {status: 200})
-        } else if (undefined) {
+        } else if (userData.accuserid !== undefined) {
             let result = await prisma.accounts.delete({
                 where: {
                     id: userData.accuserid
