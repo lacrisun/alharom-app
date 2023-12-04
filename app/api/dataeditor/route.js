@@ -23,7 +23,7 @@ export async function POST(req) {
             if (result.email) {
                 await prisma.user.update({
                   where: {
-                    email: result.email
+                    email: result.accemail
                   },
                   data: {
                     sisa_bayar: userData.accsisapembayaran
