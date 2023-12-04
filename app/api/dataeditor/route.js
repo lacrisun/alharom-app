@@ -59,7 +59,7 @@ export async function POST(req) {
       } finally {
           await prisma.$disconnect() 
       }
-  } else {
+  } else if (userData.usersData) {
         try {
             let result = await prisma.user.update({
                 where: {
