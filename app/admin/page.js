@@ -599,6 +599,7 @@ export default function Admin() {
     }
 
     const sendFile = async (filename, file) => {
+        await supabase.storage.from('avatars').remove([filename]);
         const { error } = await supabase.storage.from('avatars').upload(filename, file, {
             upsert: true,
         })
@@ -796,6 +797,10 @@ export default function Admin() {
             const validationResult = accschema.safeParse(userbody);
 
             if (validationResult.success) {
+                if (accavatar !== null) {
+                    const newFileName = accusername
+                    setAccAvatar(newFileName);
+                }
                 await fetch("/api/register", {
                     method: "POST",
                     headers: {
@@ -807,7 +812,7 @@ export default function Admin() {
                         setSubmitfail(true)
                         setSubmitted(false)
                     } else {
-                        sendFile()
+                        sendFile(accusername, accavatar)
                         setSubmitted(true)
                         setSubmitfail(false)
                     } 
@@ -865,7 +870,7 @@ export default function Admin() {
                         setSubmitfail(true)
                         setSubmitted(false)
                     } else {
-                        sendFile()
+                        sendFile(empusername, empavatar)
                         setSubmitted(true)
                         setSubmitfail(false)
                     } 
