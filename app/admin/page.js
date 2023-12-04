@@ -343,6 +343,7 @@ export default function Admin() {
             setAccNomortelepon("");
             setAccTgllahir("");
             setAccUsername("");
+            setAccPassword("")
             setAccSisapembayaran("");
             setAccAvatar(null)
             setSubmitted(false);
@@ -387,6 +388,7 @@ export default function Admin() {
             setEmpUserId("");
             setEmpNamalengkap("");
             setEmpEmail("");
+            setEmpPassword("");
             setEmpNomortelepon("");
             setEmpTgllahir("");
             setEmpUsername("");
