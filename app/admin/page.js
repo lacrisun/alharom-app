@@ -97,6 +97,8 @@ export default function Admin() {
     const [empavatar, setEmpAvatar] = useState(null)
     const [emprole, setEmpRole] = useState("Mentor")
 
+    const [prevfname, setPrevFName] = useState("")
+
     const roles = session?.user.role;
     const mentoremail = session?.user.email
 
@@ -358,7 +360,7 @@ export default function Admin() {
         const acc = accounts.find((account) => account.id === accID);
 
         setAccuserid(acc.id)
-        
+        setPrevFName(acc.username)
         setAccNamalengkap(acc.nama_lengkap)
         setAccEmail(acc.email)
         setAccNomortelepon(acc.nomor_telepon)
@@ -370,6 +372,7 @@ export default function Admin() {
             setAccuserid("");
             setAccNamalengkap("");
             setAccEmail("");
+            setPrevFName("")
             setAccNomortelepon("");
             setAccTgllahir("");
             setAccUsername("");
@@ -405,7 +408,7 @@ export default function Admin() {
         const emp = employee.find((emp) => emp.id === empID);
 
         setEmpUserId(emp.id)
-        
+        setPrevFName(emp.username)
         setEmpNamalengkap(emp.nama_lengkap)
         setEmpEmail(emp.email)
         setEmpNomortelepon(emp.nomor_telepon)
@@ -416,6 +419,7 @@ export default function Admin() {
             setEmpUserId("");
             setEmpNamalengkap("");
             setEmpEmail("");
+            setPrevFName("")
             setEmpNomortelepon("");
             setEmpTgllahir("");
             setEmpUsername("");
@@ -601,7 +605,7 @@ export default function Admin() {
     }
 
     const sendFile = async (filename, file) => {
-        await supabase.storage.from('avatars').remove([filename]);
+        await supabase.storage.from('avatars').move(prevfname, filename)
         const { error } = await supabase.storage.from('avatars').upload(filename, file, {
             upsert: true,
         })
