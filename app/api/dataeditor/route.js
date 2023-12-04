@@ -23,7 +23,7 @@ export async function POST(req) {
             if (result.email) {
                 await prisma.user.update({
                   where: {
-                    email: result.accemail
+                    email: userData.accemail
                   },
                   data: {
                     sisa_bayar: userData.accsisapembayaran
@@ -98,7 +98,7 @@ export async function POST(req) {
             if (result.email) {
                 await prisma.accounts.update({
                   where: {
-                    email: result.email
+                    email: userData.email
                   },
                   data: {
                     sisa_pembayaran: userData.sisaPembayaran
