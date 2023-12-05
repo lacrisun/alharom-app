@@ -264,7 +264,7 @@ export default function Pendaftaran() {
             redirect('/login')
         )
     }
-    if (!user.account.is_verified) {
+    if (!user || !user.account || !user.account.is_verified) {
         return (
             redirect('/not-yet-verified')
         )
