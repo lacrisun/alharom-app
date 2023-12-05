@@ -24,44 +24,13 @@ export default function NotVerified() {
         playerRef.current?.playFromBeginning()
     })
 
-    const [user, setUser] = useState([])
-
-    const getUserData = async (email) => {
-        try {
-            const data = {
-                email
-            }
-            await fetch('/api/userinfo', {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data),
-            }) .then((response) => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok')
-                }
-                return response.json()
-            }) .then((data) => {
-                setUser(data)
-            })
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    useEffect(() => {
-        if(status === 'authenticated') {
-            getUserData(session.user.email)
-        }
-    }, [status])
 
     if (status === 'loading') {
         return (
             <LoadingPage/>
         )
     }
-    if (user || user.account || user.account.is_verified || user.account.role) {
+    if (session?.user.verified) {
         return (
             redirect('/')
         )

@@ -64,6 +64,7 @@ export const authOptions: NextAuthOptions = {
                     fullname: existingUser.nama_lengkap,
                     phone: existingUser.nomor_telepon,
                     role: existingUser.role,
+                    verified: existingUser.is_verified,
                 }
 
             }
@@ -77,7 +78,8 @@ export const authOptions: NextAuthOptions = {
                     username: user.username,
                     fullname: user.fullname,
                     phone: user.phone,
-                    role: user.role
+                    role: user.role,
+                    verified: user.verified,
                 }
             }
             return token
@@ -90,7 +92,8 @@ export const authOptions: NextAuthOptions = {
                     username: token.username,
                     fullname: token.fullname,
                     phone: token.phone,
-                    role: token.role
+                    role: token.role,
+                    verified: token.verified,
                 }
             }
         },
