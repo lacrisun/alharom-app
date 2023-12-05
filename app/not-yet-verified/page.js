@@ -63,6 +63,7 @@ export default function NotVerified() {
     }
     if (user?.account?.is_verified === true || user?.account?.role) {
         redirect('/')
+        return
     }
     return (
         <>
