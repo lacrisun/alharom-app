@@ -121,5 +121,23 @@ export async function POST(req) {
         } finally {
             await prisma.$disconnect() 
         }
+    } else if (userData.financialData) {
+      try {
+          const result = await prisma.financial.update({
+              where: {
+                  id: userData.financialID
+              },
+              data: {
+                  judul_keuangan: userData.financialjudul,
+                  nominal: userData.financialnominal,
+              }
+          })
+          return NextResponse.json({result}, {status: 200})
+      } catch (error) {
+          console.error(error)
+          return NextResponse.json({error}, {status: 500})
+      } finally {
+          await prisma.$disconnect() 
+      }
     }
 }

@@ -30,6 +30,7 @@ export default function Admin() {
     const [accounts, setAccounts] = useState([])
     const [users, setUsers] = useState([])
     const [employee, setEmployee] = useState([])
+    const [financials, setFinancials] = useState([])
     const [searchQuery, setSearchQuery] = useState('');
     const [currentDay, setCurrentDay] = useState('');
 
@@ -95,6 +96,10 @@ export default function Admin() {
     const [empavatar, setEmpAvatar] = useState(null)
     const [emprole, setEmpRole] = useState("Mentor")
 
+    const [financialID, setFinancialID] = useState("")
+    const [financialjudul, setFinancialJudul] = useState("")
+    const [financialnominal, setFinancialNominal] = useState(0)
+
     const [prevfname, setPrevFName] = useState("")
 
     const roles = session?.user.role;
@@ -154,6 +159,14 @@ export default function Admin() {
         empnomortelepon: z.string().max(16, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
         emptgllahir: z.string().max(20, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
         empusername: z.string().max(20, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+    })
+
+    const finschema = z.object({
+        financialjudul: z.string().max(64, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
+    })
+
+    const fineditschema = z.object({
+        financialjudul: z.string().max(64, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
     })
 
     const fetchUserCount = async () => {
@@ -239,6 +252,21 @@ export default function Admin() {
         }
     };
 
+    const fetchFinancial = async () => {
+        try {
+            const response = await fetch(`/api/financial`);
+            const data = await response.json();
+            const financialdata = data.responseFinancialData;
+            const financialArray = JSON.parse(financialdata)
+
+            setFinancials(financialArray)
+
+        } catch (error) {
+            console.error("Error fetching user", error);
+        }
+    };
+
+
     const handleRefresh = async () => {
         setRefreshing(true);
 
@@ -247,6 +275,7 @@ export default function Admin() {
             await fetchCurrentMonthUserCount();
             await fetchUsers();
             await fetchAccountCount()
+            await fetchFinancial()
         } catch (error) {
             console.error("Error refreshing data:", error);
         }
@@ -297,6 +326,53 @@ export default function Admin() {
             setSubmitfail(false)
         })
         
+    }
+
+    const delFinModalopener = (finID) => {
+        const modal = document.getElementById('fin_del_modal')
+        modal.showModal()
+
+        const fin = financials.find((fin) => fin.id === finID);
+
+        setFinancialID(fin.id)
+
+        modal.addEventListener('close', () => {
+            setSubmitted(false)
+            setSubmitfail(false)
+        })
+        
+    }
+
+    const deleteFinance = async (e) => {
+        e.preventDefault()
+        setSubmitting(true)
+
+        try {
+            const userbody = {
+                financialID
+            }
+            await fetch("/api/deletefinancial", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(userbody),
+            }).then((response) => {
+                if (!response.ok) {
+                    setSubmitfail(true)
+                    setSubmitted(false)
+                } else {
+                    setSubmitted(true)
+                    setSubmitfail(false)
+                }
+            })
+            setSubmitting(false)
+
+        } catch (error) {
+            console.error(error)
+            setSubmitfail(true)
+            setSubmitted(false)
+        }
     }
 
     const deleteFunc = async (e) => {
@@ -399,6 +475,19 @@ export default function Admin() {
         })
     }
 
+    const createFinancialModalOpener = () => {
+        const modal = document.getElementById('fin_create_modal')
+        modal.showModal()
+
+        modal.addEventListener('close', () => {
+            setFinancialID("");
+            setFinancialJudul("");
+            setFinancialNominal(0);
+            setSubmitted(false);
+            setSubmitfail(false);
+        })
+    }
+
     const editEmployeeModalOpener = async (empID) => {
         const modal = document.getElementById('emp_edit_modal')
         modal.showModal()
@@ -426,6 +515,27 @@ export default function Admin() {
         });
 
     }
+
+    const editFinanceModalOpener = async (finID) => {
+        const modal = document.getElementById('fin_edit_modal')
+        modal.showModal()
+
+        const fin = financials.find((fin) => fin.id === finID);
+
+        setFinancialID(fin.id)
+        setFinancialJudul(fin.judul_keuangan)
+        setFinancialNominal(fin.nominal)
+
+        modal.addEventListener('close', () => {
+            setFinancialID("");
+            setFinancialJudul("");
+            setFinancialNominal(0);
+            setSubmitted(false);
+            setSubmitfail(false);
+        });
+
+    }
+
 
     const editModalopener = async (userId) => {
         const modal = document.getElementById('edit_modal')
@@ -727,6 +837,53 @@ export default function Admin() {
         }
     }
 
+    const handleFinSubmit = async (event) => {
+        event.preventDefault()
+        setSubmitting(true)
+
+        let financialData = true
+
+        try {
+            
+            const userbody = {
+                financialID,
+                financialjudul,
+                financialnominal,
+            };
+
+            const validationResult = fineditschema.safeParse(userbody);
+
+            if (validationResult.success) {
+                await fetch("/api/dataeditor", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(userbody),
+                }).then((response) => {
+                    if (!response.ok) {
+                        setSubmitfail(true)
+                        setSubmitted(false)
+                    } else {
+                        sendFile(empusername, empavatar)
+                        setSubmitted(true)
+                        setSubmitfail(false)
+                    } 
+                })
+                setSubmitting(false);
+            } else {
+                console.error(validationResult.error);
+                setSubmitfail(true);
+                setSubmitted(false);
+            }
+        } catch (error) {
+            console.error(error);
+            setSubmitfail(true);
+            setSubmitted(false);
+        }
+    }
+
+
     useEffect(() => {
         if (session?.user) {
             setDidaftarkans(session.user.fullname)
@@ -876,6 +1033,54 @@ export default function Admin() {
                         setSubmitted(false)
                     } else {
                         sendFile(empusername, empavatar)
+                        setSubmitted(true)
+                        setSubmitfail(false)
+                    } 
+                })
+
+                setSubmitting(false);
+            } else {
+                console.error(validationResult.error);
+                setSubmitfail(true);
+                setSubmitted(false);
+            }
+        } catch (error) {
+            console.error(error);
+            setSubmitfail(true);
+            setSubmitted(false);
+        }
+    }
+
+    const handleCreateFin = async (event) => {
+        event.preventDefault()
+        setSubmitting(true)
+
+        const random = Math.floor(Math.random() * 100000)
+        const randomStr = random.toString()
+
+        const randomID = "FIN-" + randomStr
+        
+        try {
+            const userbody = {
+                randomID,
+                financialjudul,
+                financialnominal,
+            };
+
+            const validationResult = finschema.safeParse(userbody);
+
+            if (validationResult.success) {
+                await fetch("/api/financialmaker", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(userbody),
+                }).then((response) => {
+                    if (!response.ok) {
+                        setSubmitfail(true)
+                        setSubmitted(false)
+                    } else {
                         setSubmitted(true)
                         setSubmitfail(false)
                     } 
@@ -2268,6 +2473,169 @@ export default function Admin() {
 
                     }
 
+                    {keuangan &&
+
+                        <div className="drawer-content flex flex-col text-3xl">
+                            <div className="w-full navbar bg-secondary">
+                                <div className="flex-none lg:hidden">
+                                    <label htmlFor="my-drawer-3" className="btn btn-square btn-primary">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            className="inline-block w-6 h-6 stroke-current"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                        </svg>
+                                    </label>
+                                </div>
+                                <div className="flex-1 px-2 mx-2 text-black">Admin Page</div>
+                            </div>
+                            <div className="grid min-h-screen z-40 bg-red-950 grid-cols-1">
+                                <div>
+                                    <div className="form-control m-2 flex flex-row h-min justify-between">
+                                        <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} type="text" name="search" placeholder="Pencarian" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered w-full max-w-xs" required />
+                                        <div>
+                                            <button
+                                                className="btn btn-primary ml-3"
+                                                onClick={handleRefresh}
+                                                disabled={refreshing}
+                                            >
+                                                Refresh Data
+                                            </button>
+                                            <button
+                                                className="btn btn-primary ml-3"
+                                                onClick={createFinancialModalOpener}
+                                            >
+                                                Buat Data
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="overflow-x-auto m-2 text-black">
+                                        <table className="table text-slate-900 bg-secondary rounded-lg">
+                                            {/* head */}
+                                            <thead className="text-slate-900">
+                                                <tr>
+                                                    <th><span><FontAwesomeIcon icon={faIdCard} /></span> ID</th>
+                                                    <th><span><FontAwesomeIcon icon={faUser} /></span> Judul</th>
+                                                    <th><span><FontAwesomeIcon icon={faEnvelope} /></span> Nominal</th>
+                                                    <th><span><FontAwesomeIcon icon={faCalendar} /></span> Data dibuat</th>
+                                                    
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {financials && financials.map((fin, index) => (
+                                                    <>
+                                                        {index === 0 || new Date(fin.data_dibuat).toLocaleDateString() !== new Date(financials[index - 1].data_dibuat).toLocaleDateString() ? (
+                                                            <tr key={`divider-${fin.id}`} className="justify-items-center">
+                                                                <td colSpan="4" className="divider bg-primary text-white rounded-lg m-2">
+                                                                    {new Date(fin.data_dibuat).toLocaleDateString('in-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                                                                </td>
+                                                            </tr>
+                                                        ) : null}
+                                                        <tr key={fin.id}>
+                                                            <td>{fin.id}</td>
+                                                            <td>{fin.judul_keuangan}</td>
+                                                            <td>Rp. {fin.nominal},-</td>
+                                                            <td>{new Date(fin.data_dibuat).toLocaleString()}</td>
+                                                            <td>
+                                                                <button onClick={() => editFinanceModalOpener(fin.id)} className="btn btn-primary"><span><FontAwesomeIcon icon={faPen} /></span></button>
+                                                            </td>
+                                                            <td>
+                                                                <button onClick={() => delFinModalopener(emp.id)} className="btn btn-primary"><span><FontAwesomeIcon icon={faTrash} /></span></button>
+                                                            </td>
+                                                        </tr>
+                                                    </>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <dialog id="fin_del_modal" className="modal">
+                                        <div className="modal-box bg-primary text-white">
+                                            <h1 className="text-3xl text-bold text-white">Hapus Data {financialID}</h1>
+                                            <h1 className="text-xl text-normal text-white "><span><FontAwesomeIcon icon={faWarning} /></span> Anda yakin ingin menghapus data ini?</h1>
+                                            {submitted && (<div className="alert alert-success mt-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                <span>Data anda telah berhasil di hapus! Mohon klik refresh untuk melihat perubahan</span></div>)}
+                                            {submitfail && (<div className="alert alert-error mt-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Error! Mohon coba lagi dalam beberapa saat</span></div>)}
+                                            <div className="modal-action">
+                                                <div>
+                                                    <button id="delbtn" className="btn btn-error" onClick={deleteFinance} disabled={submitting}>Hapus</button>
+                                                </div>
+                                                <form method="dialog">
+                                                    <button className="btn btn-secondary">Close</button>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                    </dialog>
+                                    <dialog id="fin_edit_modal" className="modal">
+                                        <div className="modal-box bg-primary text-white">
+                                            <form onSubmit={handleFinSubmit} className="card-body">
+                                                <h1 className="text-3xl text-bold text-white">Edit Data Keuangan</h1>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Judul</span>
+                                                    </label>
+                                                    <input type="text" name="Judul" value={financialjudul} onChange={(e) => setFinancialJudul(e.target.value)} placeholder="contoh : Pembayaran token" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50} />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Nominal</span>
+                                                    </label>
+                                                    <input type="number" name="Nominal" value={financialnominal} onChange={(e) => setFinancialNominal(e.target.value)} placeholder="contoh : Rp. 90000000" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50} />
+                                                </div>
+                                                <div className="form-control mt-6">
+                                                    {submitting ? (<><input type="submit" value='Mengirim...' className="btn btn-secondary"></input></>) : (<><input type="submit" value='Kirim' className="btn btn-secondary"></input></>)}
+                                                    {submitted && (<div className="alert alert-success mt-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                        <span>Data anda telah berhasil di edit! Mohon klik refresh untuk melihat perubahan</span></div>)}
+                                                    {submitfail && (<div className="alert alert-error mt-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Error! Mohon coba lagi dalam beberapa saat</span></div>)}
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <form method="dialog" className="modal-backdrop">
+                                            <button>X</button>
+                                        </form>
+                                    </dialog>
+                                    <dialog id="fin_create_modal" className="modal">
+                                        <div className="modal-box bg-primary text-white">
+                                            <form onSubmit={handleCreateFin} className="card-body">
+                                                <h1 className="text-3xl text-bold text-white">Buat Data Keuangan</h1>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Judul</span>
+                                                    </label>
+                                                    <input type="text" name="Judul" value={financialjudul} onChange={(e) => setFinancialJudul(e.target.value)} placeholder="contoh : Pembayaran token" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50} />
+                                                </div>
+                                                <div className="form-control">
+                                                    <label className="label">
+                                                        <span className="label-text">Nominal</span>
+                                                    </label>
+                                                    <input type="number" name="Nominal" value={financialnominal} onChange={(e) => setFinancialNominal(e.target.value)} placeholder="contoh : Rp. 90000000" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50} />
+                                                </div>
+                                                <div className="form-control mt-6">
+                                                    {submitting ? (<><input type="submit" value='Mengirim...' className="btn btn-secondary"></input></>) : (<><input type="submit" value='Kirim' className="btn btn-secondary"></input></>)}
+                                                    {submitted && (<div className="alert alert-success mt-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                        <span>Data anda telah berhasil di edit! Mohon klik refresh untuk melihat perubahan</span></div>)}
+                                                    {submitfail && (<div className="alert alert-error mt-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Error! Mohon coba lagi dalam beberapa saat</span></div>)}
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <form method="dialog" className="modal-backdrop">
+                                            <button>close</button>
+                                        </form>
+                                    </dialog>
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+
                     <div className="drawer-side z-50">
                         <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
                         <ul className="menu p-4 w-80 min-h-full bg-primary">
@@ -2281,7 +2649,7 @@ export default function Admin() {
                                     Dashboard
                                 </a>
                             </li>
-                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setKeberangkatan(false); setUmrahTable(false); setEmployeetable(false); setAccounttable(true);}}>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setKeberangkatan(false); setUmrahTable(false); setKeuangan(false); setEmployeetable(false); setAccounttable(true);}}>
                                 <a>
                                     <i>
                                         <FontAwesomeIcon icon={faUser} />
@@ -2289,7 +2657,7 @@ export default function Admin() {
                                     Daftar Akun
                                 </a>
                             </li>
-                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setAccounttable(false); setKeberangkatan(false); setEmployeetable(false); setUmrahTable(true); }}>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setAccounttable(false); setKeberangkatan(false); setKeuangan(false); setEmployeetable(false); setUmrahTable(true); }}>
                                 <a>
                                     <i>
                                         <FontAwesomeIcon icon={faUsers} />
@@ -2297,7 +2665,7 @@ export default function Admin() {
                                     Daftar Calon Umrah
                                 </a>
                             </li>
-                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setAccounttable(false); setKeberangkatan(false); setEmployeetable(true); setUmrahTable(false); }}>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setAccounttable(false); setKeberangkatan(false); setKeuangan(false); setEmployeetable(true); setUmrahTable(false); }}>
                                 <a>
                                     <i>
                                         <FontAwesomeIcon icon={faBuildingUser} />
@@ -2305,12 +2673,20 @@ export default function Admin() {
                                     Daftar Pegawai/Mentor
                                 </a>
                             </li>
-                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setAccounttable(false); setEmployeetable(false); setUmrahTable(false); setKeberangkatan(true); }}>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setAccounttable(false); setEmployeetable(false); setUmrahTable(false); setKeuangan(false); setKeberangkatan(true); }}>
                                 <a>
                                     <i>
                                         <FontAwesomeIcon icon={faPlaneDeparture} />
                                     </i>
                                     Daftar Jamaah yang sudah Berangkat
+                                </a>
+                            </li>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setAccounttable(false); setEmployeetable(false); setUmrahTable(false); setKeberangkatan(false); setKeuangan(true) }}>
+                                <a>
+                                    <i>
+                                        <FontAwesomeIcon icon={faMoneyBill} />
+                                    </i>
+                                    Keuangan
                                 </a>
                             </li>
                             <li className="text-white text-lg" onClick={() => signOut()}>

@@ -89,6 +89,6 @@ model Employee {
 model Financial {
   id String @id
   judul_keuangan String @db.VarChar(64)
-  nominal Int @db.Integer
+  nominal String @db.VarChar(255)
   data_dibuat DateTime @default(now())
 }

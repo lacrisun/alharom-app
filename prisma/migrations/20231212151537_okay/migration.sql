@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Financial" ALTER COLUMN "nominal" SET DATA TYPE VARCHAR(255);
