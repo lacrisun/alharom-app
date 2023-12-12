@@ -101,6 +101,7 @@ export async function POST(req) {
                     paystatus: userData.statusbyr,
                     sisa_bayar: userData.sisaPembayaran,
                     paystatus: userData.statusbyr,
+                    sudah_berangkat: userData.statusberangkat
                 }
             })
             if (result.email) {

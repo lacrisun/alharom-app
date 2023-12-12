@@ -1,17 +1,12 @@
 'use client'
 
-import AdminNav from "@/components/admincomponents/adminnavbar";
-import Dashboard from "@/components/admincomponents/dashboard";
 import LoadingPage from "@/components/loading";
-import prisma from "@/lib/prisma";
 import { faAddressCard, faBed, faBook, faBuildingUser, faCalendar, faChartLine, faCheckCircle, faEnvelope, faFileInvoice, faFileInvoiceDollar, faHandHoldingDollar, faHeartPulse, faHome, faIdCard, faLocationDot, faMapLocationDot, faMoneyBill, faNotesMedical, faPassport, faPen, faPersonCircleCheck, faPhone, faPhoneVolume, faPlaneDeparture, faRightFromBracket, faTrash, faUser, faUserDoctor, faUserGroup, faUsers, faVenusMars, faWarning } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Bar as ReactBar } from "react-chartjs-2";
-import { CategoryScale, Chart, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 
@@ -29,6 +24,8 @@ export default function Admin() {
     const [umrahtable, setUmrahTable] = useState(false)
     const [accounttable, setAccounttable] = useState(false)
     const [employeetable, setEmployeetable] = useState(false)
+    const [keuangan, setKeuangan] = useState(false)
+    const [keberangkatan, setKeberangkatan] = useState(false)
 
     const [accounts, setAccounts] = useState([])
     const [users, setUsers] = useState([])
@@ -73,6 +70,7 @@ export default function Admin() {
     const [didaftarkans, setDidaftarkans] = useState("User/Sendiri")
     const [nonuser, setNonuser] = useState(false)
     const [price, setPrice] = useState('33500000')
+    const [statusberangkat, setStatusBerangkat] = useState("Belum_Berangkat")
 
     const [payment, setPayment] = useState("Angsuran")
 
@@ -569,6 +567,7 @@ export default function Admin() {
                 sisaPembayaran,
                 statusbyr,
                 usersData,
+                statusberangkat,
             };
 
             const validationResult = schema.safeParse(userbody);
@@ -1156,6 +1155,7 @@ export default function Admin() {
                                                     <th><span><FontAwesomeIcon icon={faUserGroup} /></span> Hubungan dengan Waris</th>
                                                     <th><span><FontAwesomeIcon icon={faPhoneVolume} /></span> Keluarga yang bisa dihubungi</th>
                                                     <th><span><FontAwesomeIcon icon={faPersonCircleCheck} /></span> Didaftarkan oleh</th>
+                                                    <th><span><FontAwesomeIcon icon={faPlaneDeparture}/></span> Status Keberangkatan</th>
                                                     <th><span><FontAwesomeIcon icon={faMoneyBill} /></span> Pembayaran via</th>
                                                     <th><span><FontAwesomeIcon icon={faHandHoldingDollar} /></span> Sisa pembayaran</th>
                                                     <th><span><FontAwesomeIcon icon={faCalendar} /></span> Data Dibuat</th>
@@ -1200,6 +1200,9 @@ export default function Admin() {
                                                             <td>{user.hubungan_waris}</td>
                                                             <td>{user.keluarga_darurat}</td>
                                                             <td>{user.didaftarkan}</td>
+                                                            <td>
+                                                                <div className={user.sudah_berangkat === 'Sudah_Berangkat' ? 'badge badge-success' : 'badge badge-error'}>{user.sudah_berangkat}</div>
+                                                            </td>
                                                             <td>{user.pembayaran}</td>
                                                             <td>Rp. {user.sisa_bayar},-</td>
                                                             <td>{new Date(user.data_dibuat).toLocaleString()}</td>
@@ -1269,6 +1272,15 @@ export default function Admin() {
                                                     <select value={statusbyr} onChange={(e) => setStatusbyr(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
                                                         <option>BELUM_LUNAS</option>
                                                         <option>LUNAS</option>
+                                                    </select>
+                                                </div>
+                                                <div className="form-control w-full max-w-xs">
+                                                    <label className="label">
+                                                        <span className="label-text">Status Keberangkatan</span>
+                                                    </label>
+                                                    <select value={statusberangkat} onChange={(e) => setStatusBerangkat(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
+                                                        <option>Belum_Berangkat</option>
+                                                        <option>Sudah_Berangkat</option>
                                                     </select>
                                                 </div>
                                                 <div className="form-control">
@@ -2170,12 +2182,98 @@ export default function Admin() {
 
                     }
 
+                    {keberangkatan &&
+
+                        <div className="drawer-content flex flex-col text-3xl">
+                            <div className="w-full navbar bg-secondary">
+                                <div className="flex-none lg:hidden">
+                                    <label htmlFor="my-drawer-3" className="btn btn-square btn-primary">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            className="inline-block w-6 h-6 stroke-current"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                        </svg>
+                                    </label>
+                                </div>
+                                <div className="flex-1 px-2 mx-2 text-black">Admin Page</div>
+                            </div>
+                            <div className="grid min-h-screen z-40 bg-red-950 grid-cols-1">
+                                <div>
+                                    <div className="form-control m-2 flex flex-row h-min justify-between">
+                                        <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} type="text" name="search" placeholder="Pencarian" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered w-full max-w-xs" required />
+                                        <div>
+                                            <button
+                                                className="btn btn-primary ml-3"
+                                                onClick={handleRefresh}
+                                                disabled={refreshing}
+                                            >
+                                                Refresh Data
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="overflow-x-auto m-2 text-black">
+                                        <table className="table text-slate-900 bg-secondary rounded-lg">
+                                            <thead className="text-slate-900">
+                                                <tr>
+                                                    <th><span><FontAwesomeIcon icon={faIdCard} /></span> ID</th>
+                                                    <th><span><FontAwesomeIcon icon={faUser} /></span> Nama</th>
+                                                    <th><span><FontAwesomeIcon icon={faAddressCard} /></span> Nomor NIK</th>
+                                                    <th><span><FontAwesomeIcon icon={faPlaneDeparture} /></span> Paket Umrah</th>
+                                                    <th><span><FontAwesomeIcon icon={faBed} /></span> Tipe kamar</th>
+                                                    <th><span><FontAwesomeIcon icon={faEnvelope} /></span> Email</th>
+                                                    <th><span><FontAwesomeIcon icon={faLocationDot} /></span> Alamat</th>
+                                                    <th><span><FontAwesomeIcon icon={faVenusMars} /></span> Jenis Kelamin</th>
+                                                    <th><span><FontAwesomeIcon icon={faPersonCircleCheck} /></span> Didaftarkan oleh</th>
+                                                    <th><span><FontAwesomeIcon icon={faPlaneDeparture} /></span> Status Keberangkatan</th>
+                                                    <th><span><FontAwesomeIcon icon={faCalendar} /></span> Data Dibuat</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {users && users.map((user, index) => (
+                                                    <>
+                                                        {index === 0 || new Date(user.data_dibuat).toLocaleDateString() !== new Date(users[index - 1].data_dibuat).toLocaleDateString() ? (
+                                                            <tr key={`divider-${user.id}`} className="justify-items-center">
+                                                                <td colSpan="4" className="divider bg-primary text-white rounded-lg m-2">
+                                                                    {new Date(user.data_dibuat).toLocaleDateString('in-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                                                                </td>
+                                                            </tr>
+                                                        ) : null}
+                                                        {user.sudah_berangkat === 'Sudah_Berangkat' && (
+                                                            <tr key={user.id}>
+                                                                <td>{user.id}</td>
+                                                                <td>{user.nama_lengkap}</td>
+                                                                <td>{user.nik}</td>
+                                                                <td>{user.paket_umrah}</td>
+                                                                <td>{user.tipe_kamar}</td>
+                                                                <td>{user.email}</td>
+                                                                <td>{user.alamat}</td>
+                                                                <td>{user.jenis_kelamin}</td>
+                                                                <td>
+                                                                    <div className={user.sudah_berangkat === 'Sudah_Berangkat' ? 'badge badge-success' : 'badge badge-error'}>{user.sudah_berangkat}</div>
+                                                                </td>
+                                                                <td>{new Date(user.data_dibuat).toLocaleString()}</td>
+                                                            </tr>
+                                                        )}
+                                                    </>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+
                     <div className="drawer-side z-50">
                         <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
                         <ul className="menu p-4 w-80 min-h-full bg-primary">
                             <li className="text-3xl text-white">Halo, {session.user.fullname}</li>
                             <div className="divider"></div>
-                            <li className="text-white text-lg" onClick={() => { setDashboard(true); setUmrahTable(false); setAccounttable(false); setEmployee(false)}}>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(true); setUmrahTable(false); setAccounttable(false); setKeberangkatan(false); setEmployee(false)}}>
                                 <a>
                                     <i>
                                         <FontAwesomeIcon icon={faChartLine} />
@@ -2183,7 +2281,7 @@ export default function Admin() {
                                     Dashboard
                                 </a>
                             </li>
-                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setUmrahTable(false); setEmployeetable(false); setAccounttable(true);}}>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setKeberangkatan(false); setUmrahTable(false); setEmployeetable(false); setAccounttable(true);}}>
                                 <a>
                                     <i>
                                         <FontAwesomeIcon icon={faUser} />
@@ -2191,7 +2289,7 @@ export default function Admin() {
                                     Daftar Akun
                                 </a>
                             </li>
-                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setAccounttable(false); setEmployeetable(false); setUmrahTable(true); }}>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setAccounttable(false); setKeberangkatan(false); setEmployeetable(false); setUmrahTable(true); }}>
                                 <a>
                                     <i>
                                         <FontAwesomeIcon icon={faUsers} />
@@ -2199,12 +2297,20 @@ export default function Admin() {
                                     Daftar Calon Umrah
                                 </a>
                             </li>
-                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setAccounttable(false); setEmployeetable(true); setUmrahTable(false); }}>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setAccounttable(false); setKeberangkatan(false); setEmployeetable(true); setUmrahTable(false); }}>
                                 <a>
                                     <i>
                                         <FontAwesomeIcon icon={faBuildingUser} />
                                     </i>
                                     Daftar Pegawai/Mentor
+                                </a>
+                            </li>
+                            <li className="text-white text-lg" onClick={() => { setDashboard(false); setAccounttable(false); setEmployeetable(false); setUmrahTable(false); setKeberangkatan(true); }}>
+                                <a>
+                                    <i>
+                                        <FontAwesomeIcon icon={faPlaneDeparture} />
+                                    </i>
+                                    Daftar Jamaah yang sudah Berangkat
                                 </a>
                             </li>
                             <li className="text-white text-lg" onClick={() => signOut()}>

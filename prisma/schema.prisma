@@ -20,6 +20,11 @@ enum Roles {
   Mentor
   User
 }
+
+enum Departure {
+  Belum_Berangkat
+  Sudah_Berangkat
+}
 model User {
   id        String      @id 
   paket_umrah    String      @db.VarChar(50)
@@ -52,6 +57,7 @@ model User {
   pembayaran String @db.VarChar(20)
   data_dibuat DateTime @default(now())
   data_updated DateTime @updatedAt
+  sudah_berangkat Departure @default(Belum_Berangkat)
 }
 
 model Accounts {
@@ -78,4 +84,11 @@ model Employee {
   tanggal_bergabung DateTime @default(now())
   role Roles @default(Mentor)
   totaluser Int @default(0) @db.Integer
+}
+
+model Financial {
+  id String @id
+  judul_keuangan String @db.VarChar(64)
+  nominal Int @db.Integer
+  data_dibuat DateTime @default(now())
 }
