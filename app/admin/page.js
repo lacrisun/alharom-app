@@ -2456,6 +2456,7 @@ export default function Admin() {
                                                                 <td>{user.email}</td>
                                                                 <td>{user.alamat}</td>
                                                                 <td>{user.jenis_kelamin}</td>
+                                                                <td>{user.didaftarkan}</td>
                                                                 <td>
                                                                     <div className={user.sudah_berangkat === 'Sudah_Berangkat' ? 'badge badge-success' : 'badge badge-error'}>{user.sudah_berangkat}</div>
                                                                 </td>
@@ -2662,7 +2663,7 @@ export default function Admin() {
                                     <i>
                                         <FontAwesomeIcon icon={faUsers} />
                                     </i>
-                                    Daftar Calon Umrah
+                                    Daftar Calon Umrah/Haji
                                 </a>
                             </li>
                             <li className="text-white text-lg" onClick={() => { setDashboard(false); setAccounttable(false); setKeberangkatan(false); setKeuangan(false); setEmployeetable(true); setUmrahTable(false); }}>
