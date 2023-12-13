@@ -130,6 +130,7 @@ export async function POST(req) {
               data: {
                   judul_keuangan: userData.financialjudul,
                   nominal: userData.financialnominal,
+                  tipe_keuangan: userData.fintype
               }
           })
           return NextResponse.json({result}, {status: 200})

@@ -25,6 +25,12 @@ enum Departure {
   Belum_Berangkat
   Sudah_Berangkat
 }
+
+enum TipeKeuangan {
+  Pemasukan
+  Pengeluaran
+}
+
 model User {
   id        String      @id 
   paket_umrah    String      @db.VarChar(50)
@@ -89,6 +95,7 @@ model Employee {
 model Financial {
   id String @id
   judul_keuangan String @db.VarChar(64)
-  nominal String @db.VarChar(255)
+  tipe_keuangan TipeKeuangan
+  nominal Int @db.Integer
   data_dibuat DateTime @default(now())
 }

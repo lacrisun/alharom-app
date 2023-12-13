@@ -1,7 +1,7 @@
 'use client'
 
 import LoadingPage from "@/components/loading";
-import { faAddressCard, faBed, faBook, faBuildingUser, faCalendar, faChartLine, faCheckCircle, faEnvelope, faFileInvoice, faFileInvoiceDollar, faHandHoldingDollar, faHeartPulse, faHome, faIdCard, faLocationDot, faMapLocationDot, faMoneyBill, faNotesMedical, faPassport, faPen, faPersonCircleCheck, faPhone, faPhoneVolume, faPlaneDeparture, faRightFromBracket, faTrash, faUser, faUserDoctor, faUserGroup, faUsers, faVenusMars, faWarning } from "@fortawesome/free-solid-svg-icons";
+import { faAddressCard, faBed, faBook, faBuildingUser, faCalendar, faChartLine, faCheckCircle, faEnvelope, faFileInvoice, faFileInvoiceDollar, faHandHoldingDollar, faHeartPulse, faHome, faIdCard, faLocationDot, faMapLocationDot, faMoneyBill, faMoneyBill1, faNotesMedical, faPassport, faPen, faPersonCircleCheck, faPhone, faPhoneVolume, faPlaneDeparture, faRightFromBracket, faTrash, faUser, faUserDoctor, faUserGroup, faUsers, faVenusMars, faWarning } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
@@ -98,6 +98,7 @@ export default function Admin() {
 
     const [financialID, setFinancialID] = useState("")
     const [financialjudul, setFinancialJudul] = useState("")
+    const [fintype, setFinType] = useState("Pemasukan")
     const [financialnominal, setFinancialNominal] = useState(0)
 
     const [prevfname, setPrevFName] = useState("")
@@ -107,6 +108,10 @@ export default function Admin() {
 
     const date = new Date()
     const today = date.toLocaleString('default', { day: 'numeric', month: 'long', year: 'numeric' })
+    const tomonth = date.toLocaleString('default', {month: 'long'})
+
+    let totalIncome = 0
+    let totalExpense = 0
 
     const schema = z.object({
         namalengkap: z.string().max(50, "Tidak boleh melebihi batas huruf").min(1, "Wajib di isi"),
@@ -482,6 +487,7 @@ export default function Admin() {
         modal.addEventListener('close', () => {
             setFinancialID("");
             setFinancialJudul("");
+            setFinType("Pemasukan")
             setFinancialNominal(0);
             setSubmitted(false);
             setSubmitfail(false);
@@ -523,12 +529,14 @@ export default function Admin() {
         const fin = financials.find((fin) => fin.id === finID);
 
         setFinancialID(fin.id)
+        setFinType(fin.tipe_keuangan)
         setFinancialJudul(fin.judul_keuangan)
         setFinancialNominal(fin.nominal)
 
         modal.addEventListener('close', () => {
             setFinancialID("");
             setFinancialJudul("");
+            setFinType("Pemasukan")
             setFinancialNominal(0);
             setSubmitted(false);
             setSubmitfail(false);
@@ -848,6 +856,7 @@ export default function Admin() {
             const userbody = {
                 financialID,
                 financialjudul,
+                fintype,
                 financialnominal,
             };
 
@@ -1064,6 +1073,7 @@ export default function Admin() {
             const userbody = {
                 randomID,
                 financialjudul,
+                fintype,
                 financialnominal,
             };
 
@@ -1179,6 +1189,7 @@ export default function Admin() {
         fetchUserCount()
         fetchCurrentMonthUserCount()
         fetchAccountCount()
+        fetchFinancial()
     }, [])
 
     useEffect(() => {
@@ -2519,7 +2530,8 @@ export default function Admin() {
                                                 <tr>
                                                     <th><span><FontAwesomeIcon icon={faIdCard} /></span> ID</th>
                                                     <th><span><FontAwesomeIcon icon={faUser} /></span> Judul</th>
-                                                    <th><span><FontAwesomeIcon icon={faEnvelope} /></span> Nominal</th>
+                                                    <th><span><FontAwesomeIcon icon={faHandHoldingDollar} /></span> Tipe Keuangan</th>
+                                                    <th><span><FontAwesomeIcon icon={faMoneyBill1} /></span> Nominal</th>
                                                     <th><span><FontAwesomeIcon icon={faCalendar} /></span> Data dibuat</th>
                                                     
                                                 </tr>
@@ -2537,17 +2549,46 @@ export default function Admin() {
                                                         <tr key={fin.id}>
                                                             <td>{fin.id}</td>
                                                             <td>{fin.judul_keuangan}</td>
+                                                            <td>
+                                                                <div className={fin.tipe_keuangan === 'Pemasukan' ? 'badge badge-success' : 'badge badge-error'}>{fin.tipe_keuangan}</div>
+                                                            </td>
                                                             <td>Rp. {fin.nominal},-</td>
                                                             <td>{new Date(fin.data_dibuat).toLocaleString()}</td>
                                                             <td>
                                                                 <button onClick={() => editFinanceModalOpener(fin.id)} className="btn btn-primary"><span><FontAwesomeIcon icon={faPen} /></span></button>
                                                             </td>
                                                             <td>
-                                                                <button onClick={() => delFinModalopener(emp.id)} className="btn btn-primary"><span><FontAwesomeIcon icon={faTrash} /></span></button>
+                                                                <button onClick={() => delFinModalopener(fin.id)} className="btn btn-primary"><span><FontAwesomeIcon icon={faTrash} /></span></button>
                                                             </td>
                                                         </tr>
                                                     </>
                                                 ))}
+                                                {financials && financials.forEach(fin => {
+                                                    const finDate = new Date(fin.data_dibuat);
+                                                    const currentMonth = new Date().getMonth();
+                                                    if (finDate.getMonth() === currentMonth) {
+                                                        if (fin.tipe_keuangan === 'Pemasukan') {
+                                                            totalIncome += fin.nominal;
+                                                        } else if (fin.tipe_keuangan === 'Pengeluaran') {
+                                                            totalExpense += fin.nominal;
+                                                        }
+                                                    }
+                                                })}
+                                                        <tr>
+                                                            <td colSpan="4" className="divider bg-primary text-white rounded-lg m-2">
+                                                                Total Pemasukan {tomonth} : Rp. {totalIncome},-
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colSpan="4" className="divider bg-primary text-white rounded-lg m-2">
+                                                                Total Pengeluaran {tomonth} : Rp. {totalExpense},-
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colSpan="4" className="divider bg-primary text-white rounded-lg m-2">
+                                                                Total {tomonth} : Rp. {totalIncome - totalExpense},-
+                                                            </td>
+                                                        </tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -2581,11 +2622,20 @@ export default function Admin() {
                                                     </label>
                                                     <input type="text" name="Judul" value={financialjudul} onChange={(e) => setFinancialJudul(e.target.value)} placeholder="contoh : Pembayaran token" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50} />
                                                 </div>
+                                                <div className="form-control w-full max-w-xs">
+                                                    <label className="label">
+                                                        <span className="label-text">Tipe Keuangan</span>
+                                                    </label>
+                                                    <select value={fintype} onChange={(e) => setFinType(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
+                                                        <option>Pemasukan</option>
+                                                        <option>Pengeluaran</option>
+                                                    </select>
+                                                </div>
                                                 <div className="form-control">
                                                     <label className="label">
                                                         <span className="label-text">Nominal</span>
                                                     </label>
-                                                    <input type="number" name="Nominal" value={financialnominal} onChange={(e) => setFinancialNominal(e.target.value)} placeholder="contoh : Rp. 90000000" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50} />
+                                                    <input type="number" name="Nominal" value={financialnominal} onChange={(e) => setFinancialNominal(parseInt(e.target.value))} placeholder="contoh : Rp. 90000000" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required/>
                                                 </div>
                                                 <div className="form-control mt-6">
                                                     {submitting ? (<><input type="submit" value='Mengirim...' className="btn btn-secondary"></input></>) : (<><input type="submit" value='Kirim' className="btn btn-secondary"></input></>)}
@@ -2611,11 +2661,20 @@ export default function Admin() {
                                                     </label>
                                                     <input type="text" name="Judul" value={financialjudul} onChange={(e) => setFinancialJudul(e.target.value)} placeholder="contoh : Pembayaran token" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50} />
                                                 </div>
+                                                <div className="form-control w-full max-w-xs">
+                                                    <label className="label">
+                                                        <span className="label-text">Tipe Keuangan</span>
+                                                    </label>
+                                                    <select value={fintype} onChange={(e) => setFinType(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
+                                                        <option>Pemasukan</option>
+                                                        <option>Pengeluaran</option>
+                                                    </select>
+                                                </div>
                                                 <div className="form-control">
                                                     <label className="label">
                                                         <span className="label-text">Nominal</span>
                                                     </label>
-                                                    <input type="number" name="Nominal" value={financialnominal} onChange={(e) => setFinancialNominal(e.target.value)} placeholder="contoh : Rp. 90000000" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required maxLength={50} />
+                                                    <input type="number" name="Nominal" value={financialnominal} onChange={(e) => setFinancialNominal(parseInt(e.target.value))} placeholder="contoh : Rp. 90000000" className="bg-secondary placeholder-slate-400 text-slate-950 input input-bordered" required />
                                                 </div>
                                                 <div className="form-control mt-6">
                                                     {submitting ? (<><input type="submit" value='Mengirim...' className="btn btn-secondary"></input></>) : (<><input type="submit" value='Kirim' className="btn btn-secondary"></input></>)}
