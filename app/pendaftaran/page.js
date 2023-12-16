@@ -86,6 +86,12 @@ export default function Pendaftaran() {
             newPrice = '39197000';
         } else if (paketumrah === 'Umrah Plus Dubai') {
             newPrice = '35350000';
+        } else if (paketumrah === 'Haji Reguler') {
+            newPrice = '65000000';
+        } else if (paketumrah === 'Haji Plus') {
+            newPrice = '150000000';
+        } else if (paketumrah === 'Haji Furudah') {
+            newPrice = '300000000';
         }
 
         setPrice(newPrice);
@@ -260,6 +266,9 @@ export default function Pendaftaran() {
                                 <option>Umrah VIP</option>
                                 <option>Umrah Plus Dubai</option>
                                 <option>Umrah Plus Turki</option>
+                                <option>Haji Reguler</option>
+                                <option>Haji Plus</option>
+                                <option>Haji Furudah</option>
                             </select>
                         </div>
                         <div className="form-control w-full max-w-xs">
