@@ -2302,7 +2302,7 @@ export default function Admin() {
                                                 </div>
                                                 <div className="form-control w-full max-w-xs">
                                                     <label className="label">
-                                                        <span className="label-text">Status Verifikasi</span>
+                                                        <span className="label-text">Role Employee</span>
                                                     </label>
                                                     <select value={emprole} onChange={(e) => setEmpRole(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
                                                         <option>Mentor</option>
@@ -2371,7 +2371,7 @@ export default function Admin() {
                                                 </div>
                                                 <div className="form-control w-full max-w-xs">
                                                     <label className="label">
-                                                        <span className="label-text">Status Verifikasi</span>
+                                                        <span className="label-text">Role Employee</span>
                                                     </label>
                                                     <select value={emprole} onChange={(e) => setEmpRole(e.target.value)} className="select select-bordered bg-secondary placeholder-slate-400 text-slate-950" required>
                                                         <option>Mentor</option>

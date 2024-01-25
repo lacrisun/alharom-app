@@ -30,7 +30,7 @@ export default function NotVerified() {
             <LoadingPage/>
         )
     }
-    if (session?.user.verified) {
+    if (session?.user.verified || session?.user.role) {
         return (
             redirect('/')
         )
@@ -53,7 +53,7 @@ export default function NotVerified() {
                         </div>
                         
                         <div>
-                            <h1 className="text-xl">Akun anda belum terverifikasi!</h1>
+                            <h1 className="text-xl text-black">Akun anda belum terverifikasi!</h1>
                             <p>Mohon tunggu sesaat lagi, jika perlu hubungi kami.</p>
                         </div>
                     </div>

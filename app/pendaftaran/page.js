@@ -240,7 +240,7 @@ export default function Pendaftaran() {
             redirect('/login')
         )
     }
-    if (!session?.user.verified) {
+    if (!session?.user.verified && !session?.user.role) {
         return (
             redirect('/not-yet-verified')
         )
