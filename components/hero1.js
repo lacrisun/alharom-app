@@ -1,12 +1,12 @@
-import Image from "next/image"
+
 import Link from "next/link"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+
 
 export default function HeroSatu() {
     return (
 
-    <div className="hero min-h-screen" style={{backgroundImage: 'url(/hajjstock1.png)'}}>
-        <div className="hero-overlay bg-opacity-50"></div>
+        <div className="hero min-h-screen" style={{ backgroundImage: 'url(/hajjstock1.png)' }}>
+            <div className="hero-overlay bg-opacity-50"></div>
             <div className="hero-content text-center text-white">
                 <div className="max-w-md">
                     <h1 className="mb-5 text-5xl font-bold">Tuntut impian, Abadikan kenangan.</h1>
@@ -14,7 +14,7 @@ export default function HeroSatu() {
                     <Link href="/program&paket" className="btn btn-primary">Saya ingin daftar</Link>
                 </div>
             </div>
-    </div>
+        </div>
 
     )
 }

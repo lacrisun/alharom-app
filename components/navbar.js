@@ -11,7 +11,7 @@ export default function Navbar() {
         <div className="drawer-content flex flex-col">
             <div className="w-full navbar bg-secondary">
             <div className="flex-1 px-2 mx-2 mb-3 justify-start">
-                <Link href="/"><Image 
+                <Link href="/about"><Image 
                     src="/logo.png"
                     width={150}
                     height={76}
@@ -25,7 +25,7 @@ export default function Navbar() {
             </div> 
             <div className="flex-none hidden lg:block">
                 <ul className="menu menu-horizontal menu-lg space-x-1">
-                <li><Link href="/" className="text-black hover:text-primary">Tentang Kami</Link></li>
+                <li><Link href="/about" className="text-black hover:text-primary">Tentang Kami</Link></li>
                 <li><Link href="/pendaftaran" className="text-black hover:text-primary">Pendaftaran</Link></li>
                 <li><Link href="/program&paket" className="text-black hover:text-primary">Program & Paket</Link></li>
                 <li><Link href="/login" className="bg-primary text-white hover:bg-secondary"><i><FontAwesomeIcon icon={faRightToBracket}></FontAwesomeIcon></i>Login</Link></li>
@@ -36,7 +36,7 @@ export default function Navbar() {
         <div className="drawer drawer-side">
             <label htmlFor="my-drawer-3" className="drawer-overlay"></label> 
             <ul className="menu p-4 w-80 min-h-full bg-primary">
-            <li><Link href="/" className="text-white hover:bg-neutral"><i><FontAwesomeIcon icon={faHouse}></FontAwesomeIcon></i>Tentang Kami</Link></li>
+            <li><Link href="/about" className="text-white hover:bg-neutral"><i><FontAwesomeIcon icon={faHouse}></FontAwesomeIcon></i>Tentang Kami</Link></li>
             <li><Link href="/pendaftaran" className="text-white hover:bg-neutral"><i><FontAwesomeIcon icon={faUserPlus}></FontAwesomeIcon></i>Pendaftaran</Link></li>
             <li><Link href="/program&paket" className="text-white hover:bg-neutral"><i><FontAwesomeIcon icon={faTag} /></i>Program & Paket</Link></li>
             <li><Link href="/login" className="text-white hover:bg-neutral"><i><FontAwesomeIcon icon={faRightToBracket} /></i>Login</Link></li>

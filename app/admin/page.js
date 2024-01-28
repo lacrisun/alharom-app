@@ -2758,7 +2758,7 @@ export default function Admin() {
                                 </a>
                             </li>
                             <li className="text-white text-lg">
-                                <Link href="/">
+                                <Link href="/about">
                                     <i>
                                         <FontAwesomeIcon icon={faHome} />
                                     </i>
