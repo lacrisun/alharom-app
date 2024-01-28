@@ -4,12 +4,10 @@ import HeroDua from '@/components/hero2'
 import HeroTiga from '@/components/hero3'
 import NavbarLoggedIn from '@/components/loggedin/navbar'
 import Navbar from '@/components/navbar'
-import WhatsAppToast from '@/components/whatsapp'
 import { authOptions } from '@/lib/auth'
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { getServerSession } from 'next-auth'
-import Image from 'next/image'
 
 export default async function Home() {
 
@@ -19,7 +17,7 @@ export default async function Home() {
   return (
     <>
 
-      {session ? <NavbarLoggedIn profilepic={session.user.username} admin={session.user.role}/> : <Navbar />}
+      {session ? <NavbarLoggedIn profilepic={session.user.username} admin={session.user.role} /> : <Navbar />}
       <HeroSatu />
       <HeroDua />
       <HeroTiga />

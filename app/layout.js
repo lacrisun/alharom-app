@@ -15,7 +15,7 @@ export const metadata = {
   icons: [{ rel: 'icon', url: Favicon.src }] 
 }
 
-export default function RootLayout({ children }) {
+export default function HomeLayout({ children }) {
   return (
     <html lang="en">
       <body className={myFont.className}>{children}</body>

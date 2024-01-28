@@ -1,9 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faHouse, faPhone, faRightFromBracket, faRightToBracket, faTag, faUser, faUserPlus } from "@fortawesome/free-solid-svg-icons"
-import { faCodepen } from "@fortawesome/free-brands-svg-icons"
-import { signOut, useSession } from "next-auth/react"
+import { faHouse, faTag, faUser, faUserPlus } from "@fortawesome/free-solid-svg-icons"
 import LogoutBtn from "./logoutbtn"
 import LogoutList from "./logoutlist"
 
