@@ -402,6 +402,9 @@ export default function Admin() {
                 } else {
                     setSubmitted(true)
                     setSubmitfail(false)
+                    setUserID("")
+                    setAccuserid("")
+                    setEmpUserId("")
                 }
             })
             setSubmitting(false)
