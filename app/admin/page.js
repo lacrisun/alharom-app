@@ -857,6 +857,7 @@ export default function Admin() {
         try {
             
             const userbody = {
+                financialData,
                 financialID,
                 financialjudul,
                 fintype,
@@ -915,6 +916,12 @@ export default function Admin() {
             newPrice = '39197000';
         } else if (paketumrah === 'Umrah Plus Dubai') {
             newPrice = '35350000';
+        } else if (paketumrah === 'Haji Reguler') {
+            newPrice = '65000000';
+        } else if (paketumrah === 'Haji Plus') {
+            newPrice = '150000000';
+        } else if (paketumrah === 'Haji Furudah') {
+            newPrice = '300000000';
         }
 
         setPrice(newPrice);
@@ -932,6 +939,12 @@ export default function Admin() {
             newPrice = '39197000';
         } else if (paketumrah === 'Umrah Plus Dubai') {
             newPrice = '35350000';
+        } else if (paketumrah === 'Haji Reguler') {
+            newPrice = '65000000';
+        } else if (paketumrah === 'Haji Plus') {
+            newPrice = '150000000';
+        } else if (paketumrah === 'Haji Furudah') {
+            newPrice = '300000000';
         }
 
         setSisaPembayaran(newPrice);
@@ -1471,6 +1484,9 @@ export default function Admin() {
                                                         <option>Umrah VIP</option>
                                                         <option>Umrah Plus Dubai</option>
                                                         <option>Umrah Plus Turki</option>
+                                                        <option>Haji Reguler</option>
+                                                        <option>Haji Plus</option>
+                                                        <option>Haji Furudah</option>
                                                     </select>
                                                 </div>
                                                 <div className="form-control w-full max-w-xs">
@@ -1687,6 +1703,9 @@ export default function Admin() {
                                                         <option>Umrah VIP</option>
                                                         <option>Umrah Plus Dubai</option>
                                                         <option>Umrah Plus Turki</option>
+                                                        <option>Haji Reguler</option>
+                                                        <option>Haji Plus</option>
+                                                        <option>Haji Furudah</option>
                                                     </select>
                                                 </div>
                                                 <div className="form-control w-full max-w-xs">

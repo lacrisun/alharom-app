@@ -141,4 +141,7 @@ export async function POST(req) {
           await prisma.$disconnect() 
       }
     }
+    else {
+        return NextResponse.json({ message: "Invalid request data" }, { status: 400 });
+    }
 }
